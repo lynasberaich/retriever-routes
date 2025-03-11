@@ -1,3 +1,49 @@
+// database access point
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://abbyj1:<GjVudBkQq8nBtPRM>@rrcluster0.z76uh.mongodb.net/?retryWrites=true&w=majority&appName=RRCluster0";
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+/*
+example of how to access data
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    const database = client.db('sample_mflix');
+    const movies = database.collection('movies');
+    // Query for a movie that has the title 'Back to the Future'
+    const query = { title: 'Back to the Future' };
+    const movie = await movies.findOne(query);
+    console.log(movie);
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
+*/
+
+//connect the client to the server
+await client.connect();
+
+const database = client.db('RetrieverRoutes');
+//const movies = database.collection('movies');
+const buildings = database.collection('Buildings');
+const Food = database.collection('Food');
+const parkingLots = database.collection('ParkingLots');
+const resources = database.collection('ResourcesOffices');
+
+
 // initialize the map centered on UMBC
 var map = L.map('map').setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
 
@@ -7,14 +53,32 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 22
 }).addTo(map);
 
+document.getElementById('search-place').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form submission from reloading page
+
+    //let searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+
+    console.log(searchQuery);
+
+    query = { BuildingName: searchQuery };
+    location = await buildings.findOne(query);
+    // find a way to reference just the coordinates from the found document
+
+    if (location) {
+        map.flyTo(location); // Zoom in and move to location
+    } else {
+        alert("Location not found!");
+    }
+
+/*
 //function to handle search
 document.getElementById('search-place').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent form submission from reloading page
 
-    let searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+    //let searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
 
     console.log(searchQuery);
-    
+
     // Simple example of location search (you can expand this with a geocoding API)
     let locations = {
         "walker": [39.260266139673, -76.71523060375925],
@@ -163,14 +227,14 @@ document.getElementById('search-place').addEventListener('submit', function(even
         "umbc stadium ticket booth": [39.25050758004129, -76.70860137120687],
         "retriever soccer park ticket booth": [39.25184614891174, -76.70568534933862],
     };
-        
+      
     if (locations[searchQuery]) {
         map.flyTo(locations[searchQuery], 19); // Zoom in and move to location
     } else {
         alert("Location not found!");
     }
 });
-
+*/  
 
 document.addEventListener("DOMContentLoaded", function() {
     // Select all dropdowns
