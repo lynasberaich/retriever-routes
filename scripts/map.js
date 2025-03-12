@@ -1,3 +1,12 @@
+// initialize the map centered on UMBC
+var map = L.map('map').setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
+
+// add OpenStreetMap tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 22
+}).addTo(map);
+
 // database access point
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://abbyj1:<GjVudBkQq8nBtPRM>@rrcluster0.z76uh.mongodb.net/?retryWrites=true&w=majority&appName=RRCluster0";
@@ -42,16 +51,6 @@ const buildings = database.collection('Buildings');
 const Food = database.collection('Food');
 const parkingLots = database.collection('ParkingLots');
 const resources = database.collection('ResourcesOffices');
-
-
-// initialize the map centered on UMBC
-var map = L.map('map').setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
-
-// add OpenStreetMap tile layer
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 22
-}).addTo(map);
 
 document.getElementById('search-place').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent form submission from reloading page
