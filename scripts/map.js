@@ -60,7 +60,7 @@ document.getElementById('search-place').addEventListener('submit', function(even
     console.log(searchQuery);
 
     query = { BuildingName: searchQuery };
-    location = await buildings.findOne(query);
+    location = buildings.findOne(query);
     // find a way to reference just the coordinates from the found document
 
     if (location) {
@@ -234,6 +234,7 @@ document.getElementById('search-place').addEventListener('submit', function(even
     }
 });
 */  
+});
 
 document.addEventListener("DOMContentLoaded", function() {
     // Select all dropdowns
