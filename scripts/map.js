@@ -65,7 +65,7 @@ document.getElementById('search-place').addEventListener('submit', function(even
     // find a way to reference just the coordinates from the found document
 
     if (location) {
-        map.flyTo(location); // Zoom in and move to location
+        map.flyTo(location.Coords); // Zoom in and move to location
     } else {
         alert("Location not found!");
     }
