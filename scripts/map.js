@@ -1,3 +1,12 @@
+import db from "./database"
+
+const database = client.db('RetrieverRoutes');
+//const movies = database.collection('movies');
+const buildings = database.collection('Buildings');
+const Food = database.collection('Food');
+const parkingLots = database.collection('ParkingLots');
+const resources = database.collection('ResourcesOffices');
+
 // initialize the map centered on UMBC
 var map = L.map('map').setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
 
@@ -6,29 +15,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
     maxZoom: 22
 }).addTo(map);
-
-/*
-// database access point
-const { MongoClient, ServerApiVersion } = require('mongodb');
-//const uri = "mongodb+srv://abbyj1:<password_here>@rrcluster0.z76uh.mongodb.net/?retryWrites=true&w=majority&appName=RRCluster0";
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});*/
-
-//connect the client to the server
-await client.connect();
-
-const database = client.db('RetrieverRoutes');
-//const movies = database.collection('movies');
-const buildings = database.collection('Buildings');
-const Food = database.collection('Food');
-const parkingLots = database.collection('ParkingLots');
-const resources = database.collection('ResourcesOffices');
 
 document.getElementById('search-place').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent form submission from reloading page
@@ -40,9 +26,10 @@ document.getElementById('search-place').addEventListener('submit', function(even
     query = { BuildingName: searchQuery };
     location = buildings.findOne(query);
     // find a way to reference just the coordinates from the found document
+    coords = location.distinct("Coords", {Coords: {$exists : true}});
 
     if (location) {
-        map.flyTo(location.Coords); // Zoom in and move to location
+        map.flyTo(coords); // Zoom in and move to location
     } else {
         alert("Location not found!");
     }
