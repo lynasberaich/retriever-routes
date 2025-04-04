@@ -530,11 +530,21 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-
 // Leaflet Routing Machine
 L.Routing.control({
     waypoints: [
       L.latLng(locations["ite"]),
       L.latLng(locations["retriever soccer park ticket booth"])
-    ]
+    ],
+    // OSRM routing service
+    router: L.Routing.osrmv1({
+        serviceUrl: 'https://router.project-osrm.org/route/v1'
+    }),
+    routeWhileDragging: true,
+    geocoder: L.Control.Geocoder.nominatim()
   }).addTo(map);
+
+// Error handling
+routingControl.on('routingerror', function(e) {
+    console.log('Routing error:', e);
+});
