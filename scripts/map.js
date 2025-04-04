@@ -7,6 +7,108 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 22
 }).addTo(map);
 
+// Add invisible clickable building areas
+function addClickableBuildings() {
+    // Define building information with polygon coordinates and details
+    const buildings = {
+        "Library": {
+            // These are approximate polygon corners - you'll need to adjust for actual building outlines
+            polygon: [
+                [39.25663, -76.71199],
+                [39.25663, -76.71120],
+                [39.25600, -76.71120],
+                [39.25600, -76.71199]
+            ],
+            info: {
+                name: "Albin O. Kuhn Library & Gallery",
+                hours: "Monday-Thursday: 8am-10pm<br>Friday: 8am-8pm<br>Saturday: 10am-6pm<br>Sunday: 12pm-8pm",
+                description: "The Albin O. Kuhn Library & Gallery serves as UMBC's central academic information resource.",
+                facilities: ["Study spaces", "Computer labs", "Special collections", "Art gallery"]
+            }
+        },
+        "Commons": {
+            polygon: [
+                [39.25528, -76.71119],
+                [39.25528, -76.71056],
+                [39.25470, -76.71056],
+                [39.25470, -76.71119]
+            ],
+            info: {
+                name: "The Commons",
+                hours: "Monday-Friday: 7am-11pm<br>Saturday-Sunday: 9am-10pm",
+                description: "The Commons is UMBC's community center that houses dining options, meeting spaces, and offices.",
+                facilities: ["True Grits Dining Hall", "Yum Shoppe", "Gameroom", "Bookstore"]
+            }
+        },
+        "Engineering": {
+            polygon: [
+                [39.25486, -76.71435],
+                [39.25486, -76.71366],
+                [39.25426, -76.71366],
+                [39.25426, -76.71435]
+            ],
+            info: {
+                name: "Engineering Building",
+                hours: "Monday-Friday: 7am-10pm<br>Saturday-Sunday: Limited access",
+                description: "Home to the College of Engineering and Information Technology.",
+                facilities: ["Classrooms", "Research labs", "Faculty offices", "Computer labs"]
+            }
+        },
+        // Add more buildings as needed
+    };
+
+    // Create invisible polygons for each building
+    for (const [key, building] of Object.entries(buildings)) {
+        // Create invisible polygon
+        const polygon = L.polygon(building.polygon, {
+            color: 'transparent',       // Invisible border
+            fillColor: 'transparent',   // Invisible fill
+            fillOpacity: 0,             // Completely transparent
+            weight: 0                   // No border
+        }).addTo(map);
+        
+        // Change cursor to pointer when hovering over building
+        polygon.on('mouseover', function() {
+            this.setStyle({
+                fillOpacity: 0.2,       // Slight highlight on hover
+                fillColor: '#FDB515'    // UMBC gold
+            });
+            document.getElementById('map').style.cursor = 'pointer';
+        });
+        
+        // Remove highlight when mouse leaves
+        polygon.on('mouseout', function() {
+            this.setStyle({
+                fillOpacity: 0,
+                fillColor: 'transparent'
+            });
+            document.getElementById('map').style.cursor = '';
+        });
+        
+        // Create popup content with HTML formatting
+        const popupContent = `
+            <div class="building-popup">
+                <h3>${building.info.name}</h3>
+                <p><strong>Hours:</strong><br>${building.info.hours}</p>
+                <p>${building.info.description}</p>
+                <p><strong>Facilities:</strong></p>
+                <ul>
+                    ${building.info.facilities.map(facility => `<li>${facility}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+        
+        // Bind popup to polygon
+        polygon.bindPopup(popupContent, {
+            maxWidth: 300,
+            className: 'building-info-popup'
+        });
+    }
+}
+
+// Call the function to add clickable buildings
+addClickableBuildings();
+
 //function to handle search
 document.getElementById('search-place').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent form submission from reloading page
