@@ -8,7 +8,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Global dict of locations
-let locations = {
+const LOCATIONS = {
     "walker": [39.260266139673, -76.71523060375925],
     "walker avenue apartments": [39.25952914250935, -76.71411958317229],
     //-------------------------------------------------------------------
@@ -531,20 +531,20 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Leaflet Routing Machine
-L.Routing.control({
+const routeCtrl = L.Routing.control({
     waypoints: [
-      L.latLng(locations["ite"]),
-      L.latLng(locations["retriever soccer park ticket booth"])
+      L.latLng(LOCATIONS['ite']),
+      L.latLng(LOCATIONS['retriever soccer park ticket booth'])
     ],
     // OSRM routing service
     router: L.Routing.osrmv1({
         serviceUrl: 'https://router.project-osrm.org/route/v1'
     }),
     routeWhileDragging: true,
-    geocoder: L.Control.Geocoder.nominatim()
+    position: 'bottomleft'
   }).addTo(map);
 
 // Error handling
-routingControl.on('routingerror', function(e) {
+routeCtrl.on('routingerror', function(e) {
     console.log('Routing error:', e);
 });
