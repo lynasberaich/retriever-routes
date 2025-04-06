@@ -12,6 +12,9 @@
 </head>
 <body>
     <h1>Retriever Routes</h1>
+
+    <!-- Toggle Button -->
+    <button id="toggle-btn" class="link-box">Toggle View</button>
     <div id="map">
         <!-- Image overlay -->
         <img id="icon" src="assets/images/icon_no_bg.png" alt="Retriever Routes Icon">
@@ -79,5 +82,19 @@
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/examples/Control.Geocoder.js"></script>
     <script src="scripts/map.js"></script>
+
+    <script>
+        document.getElementById('toggle-btn').addEventListener('click', function() {
+            
+            var mainDiv = document.getElementById('main-div');
+            
+            
+            if (mainDiv.style.display === 'none') {
+                mainDiv.style.display = 'block'; // Show the main-div
+            } else {
+                mainDiv.style.display = 'none'; 
+            }
+        });
+    </script>
 </body>
 </html>
