@@ -644,7 +644,11 @@ const routeCtrl = L.Routing.control({
         serviceUrl: 'https://router.project-osrm.org/route/v1'
     }),
     routeWhileDragging: true,
-    position: 'bottomleft'
+    position: 'bottomleft',
+    fitSelectedRoutes: true,
+    addWaypoints: false,
+    collapsible: true,
+    units: 'imperial'
   }).addTo(map);
 
 // Error handling
