@@ -315,3 +315,43 @@ button {
     }
 }
 }
+
+/* routing search box */
+#routing-search-container {
+    position: absolute;
+    bottom: 200px;
+    left: 340px; /* just to the right of the routing control box */
+    z-index: 1000;
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+    transition: opacity 0.3s ease-in-out;
+    width: 300px;
+}
+
+#routing-search-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#routing-search input {
+    margin-bottom: 5px;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#routing-search button {
+    width: 100%;
+    padding: 5px;
+    background: #FDB515;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#routing-search button:hover {
+    background: #e5a313;
+}

@@ -633,6 +633,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+//#region ROUTING
 // Leaflet Routing Machine
 const routeCtrl = L.Routing.control({
     waypoints: [
@@ -651,7 +652,103 @@ const routeCtrl = L.Routing.control({
     units: 'imperial'
   }).addTo(map);
 
+// Autocomplete for routing inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const startInput = document.getElementById('route-start');
+    const endInput = document.getElementById('route-end');
+    
+    const startAutocomplete = document.createElement('div');
+    const endAutocomplete = document.createElement('div');
+    startAutocomplete.className = 'autocomplete-items';
+    endAutocomplete.className = 'autocomplete-items';
+    startInput.parentNode.appendChild(startAutocomplete);
+    endInput.parentNode.appendChild(endAutocomplete);
+
+    // Handling autocomplete
+    function setupAutocomplete(input, autocompleteContainer) {
+        input.addEventListener('input', function() {
+            const value = this.value.toLowerCase().trim();
+            
+            // Clear previous suggestions
+            autocompleteContainer.innerHTML = '';
+            
+            if (!value) return false;
+            
+            // Filter matching locations
+            const matches = Object.keys(LOCATIONS).filter(key => 
+                key.toLowerCase().includes(value)
+            );
+            
+            // Show top 5 matches
+            matches.slice(0, 5).forEach(match => {
+                const item = document.createElement('div');
+                item.innerHTML = match;
+                item.addEventListener('click', function() {
+                    input.value = match;
+                    autocompleteContainer.innerHTML = '';
+                });
+                autocompleteContainer.appendChild(item);
+            });
+        });
+    }
+
+    // Setup autocomplete for both inputs
+    setupAutocomplete(startInput, startAutocomplete);
+    setupAutocomplete(endInput, endAutocomplete);
+
+    // Handle routing form submission
+    document.getElementById('routing-search').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const startLocation = startInput.value.trim().toLowerCase();
+        const endLocation = endInput.value.trim().toLowerCase();
+
+        // Check if locations exist
+        if (LOCATIONS[startLocation] && LOCATIONS[endLocation]) {
+            // Update routing control waypoints
+            routeCtrl.setWaypoints([
+                L.latLng(LOCATIONS[startLocation]),
+                L.latLng(LOCATIONS[endLocation])
+            ]);
+        } else {
+            alert("Invalid waypoint(s)");
+        }
+    });
+
+    // Hide suggestions when clicking elsewhere
+    document.addEventListener('click', function(e) {
+        if (e.target !== startInput && e.target !== endInput) {
+            startAutocomplete.innerHTML = '';
+            endAutocomplete.innerHTML = '';
+        }
+    });
+});
+
+/* the following block of code will hide the routing search container
+    when we wide the routing instructions box */
+// Get the routing container element
+const routingContainer = document.querySelector('.leaflet-routing-container');
+const routingSearchContainer = document.getElementById('routing-search-container');
+
+// Observer to watch for class changes on the routing container
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.attributeName === 'class') {
+            // Check if routing container is collapsed
+            const isCollapsed = routingContainer.classList.contains('leaflet-routing-container-hide');
+            // Toggle search container visibility
+            routingSearchContainer.classList.toggle('hidden', isCollapsed);
+        }
+    });
+});
+
+// Start observing the routing container for class changes
+observer.observe(routingContainer, {
+    attributes: true
+});
+
 // Error handling
 routeCtrl.on('routingerror', function(e) {
     console.log('Routing error:', e);
 });
+//#endregion
