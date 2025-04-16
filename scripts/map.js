@@ -45,8 +45,8 @@ function addClickableBuildings() {
         const popupContent = `
             <div class="building-popup">
                 <h3>${building.info.name}</h3>
-                <p><strong>Hours:</strong><br>${building.info.hours}</p>
                 <p>${building.info.description}</p>
+                <p><strong>Hours:</strong><br>${building.info.hours}</p>
                 <p><strong>Facilities:</strong></p>
                 <ul>
                     ${building.info.facilities.map(facility => `<li>${facility}</li>`).join('')}
