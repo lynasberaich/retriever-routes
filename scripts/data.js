@@ -6,9 +6,9 @@ export const buildings = {
         nearest_lot: ["PL31"],
         info:{
             name: "900 Walker",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Friday: 8am-6pm<br>Saturday-Sunday: Closed",
+            description: "900 Walker is a building at UMBC occupied for many different uses, from providing spaces for student organizations and clubs, to parking services offices.",
+            facilities: ["Parking services", "Research labs", "Student club spaces (Baja, AIAA, Retriever Robotics)"]
         }
     },
     "Walker Avenue Apartments": {
@@ -18,9 +18,9 @@ export const buildings = {
         nearest_lot: ["PL20"],
         info:{
             name: "Walker Avenue Apartments",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Professional Staff:<br>Monday–Friday: 9am–5pm<br>Student Staff:<br>Monday–Friday: 5pm–10pm<br>Saturday & Sunday: 9am–10pm",
+            description: "Upperclassmen housing with apartment-style living, seperately managed by Capstone On Campus.",
+            facilities: ["Apartment stacks", "Office", "Beach volleyball court", "Open courtyards"]
         }
     },
     "Army ROTC": {
@@ -84,9 +84,9 @@ export const buildings = {
         nearest_lot: ["PL06"],
         info:{
             name: "Apartment Community Center (ACC)",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Office:<br>Monday-Friday 8:30AM-5PM<br>Student residents:<br>24-hour access",
+            description: "Central hub for West Hill and Terrace Apartment residents offering lounge areas, laundry facilities, and support services.",
+            facilities: ["Laundry", "Study spaces"]
         }
     },
     "Terrace Apartments GUN (Gunpowder)": {
@@ -192,9 +192,9 @@ export const buildings = {
         nearest_lot: ["PL05"],
         info:{
             name: "Erickson Hall",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Offices: Monday-Friday 8:30AM-5PM<br>Front desk: 24-hour student management",
+            description: "Modern residence hall with suite-style rooms, conveniently located near dining and academic buildings.",
+            facilities: ["Reslife Office", "Courtyard lounge spaces", "Outdoor gas grills"]
         }
     },
     "YMCA Preschool Center": {
@@ -210,9 +210,9 @@ export const buildings = {
         nearest_lot: ["PL05"],
         info:{
             name: "Harbor Hall",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Front desk: 24-hour student management",
+            description: "Modern residence hall with suite-style rooms, conveniently located near dining and academic buildings.",
+            facilities: ["Living-learning communities"]
         }
     },
     "Chesapeake Hall": {
@@ -222,9 +222,9 @@ export const buildings = {
         nearest_lot: ["PL05"],
         info:{
             name: "Chesapeake Hall",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Front desk: 24-hour student management",
+            description: "First-year residence hall with community-focused living and easy access to True Grits and academic buildings.",
+            facilities: ["Center for Women In Technology Living-Learning Community"]
         }
     },
     "Satellite Plant": {
@@ -240,9 +240,9 @@ export const buildings = {
         nearest_lot: ["PL11"],
         info:{
             name: "The Center for Well-Being",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Friday: 8:00AM-5:00PM<br>Saturday-Sunday: Closed",
+            description: "Offers mental health, wellness, and health services in a peaceful, modern setting.",
+            facilities: ["Health services and counselling", "Gathering space for spiritual well-being", "Office of health promotion", "Student conduct and community standards"]
         }
     },
     "Susquehanna Hall": {
@@ -252,9 +252,9 @@ export const buildings = {
         nearest_lot: ["PL04"],
         info:{
             name: "Susquehanna Hall",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Front desk: 24-hour student management",
+            description: "Residence hall for first-year students with vibrant community engagement and spacious lounges.",
+            facilities: ["Honors College Living Learning Community"]
         }
     },
     "True Grits": {
@@ -264,9 +264,9 @@ export const buildings = {
         nearest_lot: ["PL11", "PL04"],
         info:{
             name: "True Grits",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Thursday: 7:30–9AM, 11AM–2PM, 4:30–8PM<br>Friday:7:30–9AM, 11AM–2PM, 4:30–9PM<br>Saturday: 9:30AM–2PM, 4:30–9PM<br>Sunday: 9:30AM–2PM, 4:30–7PM",
+            description: "UMBC’s main dining hall, offering buffet-style meals and a variety of dining options daily.",
+            facilities: ["Buffet-style eatery"]
         }
     },
     "Potomac Hall": {
@@ -276,8 +276,8 @@ export const buildings = {
         nearest_lot: ["PL12"],
         info:{
             name: "Potomac Hall",
-            hours: "",
-            description: "",
+            hours: "Front desk: 24-hour student management",
+            description: "First-year residence hall offering a balance between privacy and community.",
             facilities: []
         }
     },
@@ -288,8 +288,8 @@ export const buildings = {
         nearest_lot: ["PL03", "PL23"],
         info:{
             name: "Patapsco Hall",
-            hours: "",
-            description: "",
+            hours: "Front desk: 24-hour student management",
+            description: "First-year residence hall with vibrant student life, programming, and communal spaces.",
             facilities: []
         }
     },
@@ -360,15 +360,15 @@ export const buildings = {
         nearest_lot: ["PL26"]
     },
     "Chesapeake Arena": {
-        coordinates: [39.25679875875331, -76.7085723424885],
+        coordinates: [39.25203973575942, -76.70741319575494],
         resources: [],
         food: [],
         nearest_lot: ["PL14", "PL28", "PL27"],
         info:{
-            name: "Chesapeake Arena",
-            hours: "",
-            description: "",
-            facilities: []
+            name: "Chesapeake Employers Insurance Arena",
+            hours: "Event dependent",
+            description: "The Chesapeake Employers Insurance Arena is a basketball arena, concert and multi-purpose event venue on the campus of the University of Maryland, Baltimore County in Catonsville, Maryland.",
+            facilities: ["Reconfigurable arena area", "UMBC Athletics Offices", "UMBC Athletics Facilities", "Student-athlete study center"]
         }
     },
     "Interdisciplinary Life Sciences Building": {

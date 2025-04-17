@@ -32,8 +32,9 @@ function addClickableBuildings() {
         // Change cursor to pointer when hovering over building
         polygon.on('mouseover', function() {
             this.setStyle({
-                fillOpacity: 0.2,       // Slight highlight on hover
-                fillColor: '#FDB515'    // UMBC gold
+                fillOpacity: 0.5,       // Slight highlight on hover
+                //fillColor: '#FDB515'    // UMBC gold
+                fillColor: '#007176' // UMBC AOK Teal
             });
             document.getElementById('map').style.cursor = 'pointer';
         });
@@ -87,6 +88,21 @@ document.getElementById('search-place').addEventListener('submit', function(even
     if (shorthandInputs[searchQuery]) {
         buildingName = shorthandInputs[searchQuery];
         map.flyTo(buildings[buildingName].coordinates, 19); // Zoom in and move to location
+
+        // Create popup content with HTML formatting
+        if ("info" in buildings[buildingName]){
+            const popupContent = `
+                <div class="building-popup">
+                    <h3>${buildings[buildingName].info.name}</h3>
+                    <p>${buildings[buildingName].info.description}</p>
+                    <p><strong>Hours:</strong><br>${buildings[buildingName].info.hours}</p>
+                    <p><strong>Facilities:</strong></p>
+                    <ul>
+                        ${buildings[buildingName].info.facilities.map(facility => `<li>${facility}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
     } else {
         alert("Location not found!");
     }
