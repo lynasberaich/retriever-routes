@@ -1,4 +1,5 @@
-import { buildings, food, parking, resources, shorthandInputs, polyBuildings, buildingNames } from './data.js';
+import { buildings, food, parking, resources, shorthandInputs, buildingNames } from './data.js';
+import { umbc_polygons } from './polygons.js';
 
 // initialize the map centered on UMBC
 var map = L.map('map').setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
@@ -14,9 +15,14 @@ function addClickableBuildings() {
     // Define building information with polygon coordinates and details
 
     // Create invisible polygons for each building
-    for (const [key, building] of Object.entries(polyBuildings)) {
+    for (const [key, building] of Object.entries(umbc_polygons)) {
+        if (!(key in buildings)) {
+            console.warn(`Key "${key}" missing in buildings`);
+        }
         // Create invisible polygon
-        const polygon = L.polygon(building.polygon, {
+        const correctedCoords = building.map(coord => [coord[1], coord[0]]);
+
+        const polygon = L.polygon(correctedCoords, {
             color: 'transparent',       // Invisible border
             fillColor: 'transparent',   // Invisible fill
             fillOpacity: 0,             // Completely transparent
@@ -42,23 +48,27 @@ function addClickableBuildings() {
         });
         
         // Create popup content with HTML formatting
-        const popupContent = `
-            <div class="building-popup">
-                <h3>${building.info.name}</h3>
-                <p>${building.info.description}</p>
-                <p><strong>Hours:</strong><br>${building.info.hours}</p>
-                <p><strong>Facilities:</strong></p>
-                <ul>
-                    ${building.info.facilities.map(facility => `<li>${facility}</li>`).join('')}
-                </ul>
-            </div>
-        `;
-        
-        // Bind popup to polygon
-        polygon.bindPopup(popupContent, {
-            maxWidth: 300,
-            className: 'building-info-popup'
-        });
+        if ("info" in buildings[key]){
+            console.warn(`Building "${key}" should have popup`);
+            const popupContent = `
+                <div class="building-popup">
+                    <h3>${buildings[key].info.name}</h3>
+                    <p>${buildings[key].info.description}</p>
+                    <p><strong>Hours:</strong><br>${buildings[key].info.hours}</p>
+                    <p><strong>Facilities:</strong></p>
+                    <ul>
+                        ${buildings[key].info.facilities.map(facility => `<li>${facility}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            
+            // Bind popup to polygon
+            polygon.bindPopup(popupContent, {
+                maxWidth: 300,
+                className: 'building-info-popup'
+            });
+        }
     }
 }
 
