@@ -59,11 +59,16 @@
                     <img class="down-icon" src="assets/images/chevron.png" alt="down icon">
                 </button>
                 <p> Visitor and Residential Parking</p>
-                <div class="dropdown-content">
-                    <p>Lot 1</p>
-                    <p>Lot 2</p>
-                    <p>Parking Garage</p>
-                </div> 
+                <div class="dropdown-content" id="permit-filters">
+                    <p><input type="checkbox" value="A"> Permit A</p>
+                    <p><input type="checkbox" value="B"> Permit B</p>
+                    <p><input type="checkbox" value="C"> Permit C</p>
+                    <p><input type="checkbox" value="D"> Permit D</p>
+                    <p><input type="checkbox" value="E"> Permit E</p>
+                    <p><input type="checkbox" value="P"> Paid/Visitor Parking</p>
+                    <p><input type="checkbox" value="Ev"> Event Parking</p>
+                    <p><input type="checkbox" value="♿"> Accessible Parking</p>
+                </div>
             </div>
 
 
@@ -90,7 +95,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/examples/Control.Geocoder.js"></script>
---><script src="scripts/map.js"></script>
     <script src="scripts/map.js", type="module"></script>
 
     <script>
