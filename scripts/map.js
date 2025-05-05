@@ -1,8 +1,16 @@
-import { buildings, food, parking, resources, shorthandInputs, buildingNames } from './data.js';
+import { buildings, food, parking, resources, shorthandInputs, buildingNames, permit_names } from './data.js';
 import { umbc_polygons } from './polygons.js';
 
 // initialize the map centered on UMBC
 var map = L.map('map').setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
+
+var selectedParkStart = "";
+var selectedParkEnd = "";
+
+var sel_destination_flag = 0;
+var sel_start_flag = 0;
+
+let activeMarkers = [];
 
 // add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -50,7 +58,6 @@ function addClickableBuildings() {
         
         // Create popup content with HTML formatting
         if ("info" in buildings[key]){
-            console.warn(`Building "${key}" should have popup`);
             const popupContent = `
                 <div class="building-popup">
                     <h3>${buildings[key].info.name}</h3>
@@ -169,6 +176,132 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+// ------------- Filtering --------------
+
+function updateMarkers() {
+    // Clear old markers
+    activeMarkers.forEach(m => map.removeLayer(m));
+    activeMarkers = [];
+
+    const checkedPermits = Array.from(document.querySelectorAll('#permit-filters input:checked'))
+        .map(cb => cb.value);
+
+    for (const lot of Object.values(parking)) {
+        const matchingPermits = lot.permit.filter(p => checkedPermits.includes(p));
+
+        matchingPermits.forEach((permit, index) => {
+            const icon = L.divIcon({
+                className: '',
+                html: `<div class="permit-marker" style="background-color: ${getColor(permit)};">${permit}</div>`,
+                iconSize: [25, 25],
+                iconAnchor: [12, 12]
+            });
+            
+            const offset = getOffset(index); // use index to space out markers
+            const offsetCoords = [
+                lot.coordinates[0] + offset[0],
+                lot.coordinates[1] + offset[1]
+            ];
+
+            const all_permit_names = [];
+            for (let i = 0; i < lot.permit.length; i++) {
+                all_permit_names.push(permit_names[lot.permit[i]]);
+            }
+            all_permit_names.join(", ");
+
+            const popupContent = `
+                <div class="parking-popup">
+                    <h3>${lot.name}</h3>
+                    <p><strong>Permits permitted:</strong><br>${all_permit_names}</p>
+                    <p><strong>Hours enforced:</strong><br>${lot.hours}</p>
+                    <button class="set-start-btn" data-lat="${offsetCoords[0]}" data-lng="${offsetCoords[1]}"><strong>Set as Start Location</strong></button><br>
+                    <button class="set-destination-btn" data-lat="${offsetCoords[0]}" data-lng="${offsetCoords[1]}"><strong>Set as Destination</strong></button>
+                </div>
+            `;
+
+            
+
+            const marker = L.marker(offsetCoords, { icon })
+                .bindPopup(popupContent, {
+                    maxWidth: 300,
+                    className: 'parking-info-popup'});
+            
+                    marker.on('popupopen', function() {
+                        const destinationBtn = document.querySelector('.set-destination-btn');
+                        const startBtn = document.querySelector('.set-start-btn');
+                    
+                        if (destinationBtn) {
+                            destinationBtn.addEventListener('click', function () {
+                                const lat = parseFloat(this.getAttribute('data-lat'));
+                                const lng = parseFloat(this.getAttribute('data-lng'));
+                    
+                                document.getElementById('route-end').value = lot.name;
+                    
+                                selectedParkEnd = lot;
+                                sel_destination_flag = 1;
+                                marker.closePopup();
+                            });
+                        }
+                    
+                        if (startBtn) {
+                            startBtn.addEventListener('click', function () {
+                                const lat = parseFloat(this.getAttribute('data-lat'));
+                                const lng = parseFloat(this.getAttribute('data-lng'));
+                    
+                                document.getElementById('route-start').value = lot.name;
+                                selectedParkStart = lot;
+                                sel_start_flag = 1;
+                    
+                                marker.closePopup();
+                            });
+                        }
+                    });                    
+            marker.addTo(map);
+            activeMarkers.push(marker);
+        });
+
+    
+    }
+}
+
+function getOffset(index) {
+    const delta = 0.00007; // Small nudge in degrees
+    const offsets = [
+        [delta, delta],
+        [-delta, delta],
+        [delta, -delta],
+        [-delta, -delta],
+        [0, delta],
+        [delta, 0],
+        [0, -delta],
+        [-delta, 0]
+    ];
+    return offsets[index % offsets.length]; // Cycle if more than 8
+}
+
+function getColor(permit) {
+    const colors = {
+        A: '#d9534f',
+        B: '#047d00',
+        C: '#ffc800',
+        D: '#7300b5',
+        E: '#7300b5',
+        P: '#292b2c',
+        Ev: '#008da6',
+        '♿': '#0099ff'
+    };
+    return colors[permit] || '#666';
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('#permit-filters input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        console.log(`Checked: ${cb.value}`);
+        updateMarkers(); // This function should handle adding/removing markers
+      });
+    });
+});
+
 //#region ROUTING
 // Leaflet Routing Machine
 const routeCtrl = L.Routing.control({
@@ -246,6 +379,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 L.latLng(buildings[shorthandInputs[startLocation]].coordinates),
                 L.latLng(buildings[shorthandInputs[endLocation]].coordinates)
             ]);
+        } else if (sel_destination_flag && !sel_start_flag) {
+            routeCtrl.setWaypoints([
+                L.latLng(buildings[shorthandInputs[startLocation]].coordinates),
+                L.latLng(selectedParkEnd.coordinates)
+            ]);
+            sel_destination_flag = 0;
+            document.getElementById('route-end').value = "";
+        }else if (sel_start_flag && !sel_destination_flag) {
+            routeCtrl.setWaypoints([
+                L.latLng(selectedParkStart.coordinates),
+                L.latLng(buildings[shorthandInputs[endLocation]].coordinates)
+            ]);
+            sel_start_flag = 0;
+            document.getElementById('route-start').value = "";
+        }else if (sel_start_flag && sel_start_flag) {
+            routeCtrl.setWaypoints([
+                L.latLng(selectedParkStart.coordinates),
+                L.latLng(selectedParkEnd.coordinates)
+            ]);
+            sel_start_flag = 0;
+            sel_destination_flag = 0;
+            document.getElementById('route-end').value = "";
+            document.getElementById('route-start').value = "";
         } else {
             alert("Invalid waypoint(s)");
         }

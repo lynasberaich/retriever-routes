@@ -534,7 +534,7 @@ export const buildings = {
         }
     },
     "Fine Arts Building": {
-        coordinates: [39.25510314572796, -76.71517938793554],
+        coordinates: [39.25510996739115, -76.71344928817392],
         resources: [],
         food: [],
         nearest_lot: ["PL08", "PL09"],
@@ -629,148 +629,363 @@ export const parking = {
     "PL01": {
         name: "Lot 1",
         coordinates: [39.25349964638486, -76.70842727790705],
-        permit: ["D"]
+        permit: ["D"],
+        hours: '8am-4pm'
     },
     "PL02": {
         name: "Lot 2",
         coordinates: [39.25429814654204, -76.7090366163948],
-        permit: ["D", "E"]
+        permit: ["D", "E"],
+        hours: '8am-4pm'
     },
     "PL03": {
         name: "Lot 3",
         coordinates: [39.2542578184693, -76.70740650573954],
-        permit: ["A"]
+        permit: ["A"],
+        hours: '8am-4pm'
     },
     "PL04": {
         name: "Lot 4",
         coordinates: [39.25485063880283, -76.708307493418],
-        permit: ["A"]
+        permit: ["A"],
+        hours: '8am-4pm'
     },
     "PL05": {
         name: "Lot 5",
         coordinates: [39.25771519378621, -76.70802073115559],
-        permit: ["C"]
+        permit: ["C"],
+        hours: '8am-4pm'
     },
     "PL06": {
         name: "Lot 6",
         coordinates: [39.25865565319219, -76.71079481781177],
-        permit: ["C"]
+        permit: ["C"],
+        hours: '8am-4pm'
     },
     "PL07": {
         name: "Lot 7",
         coordinates: [39.25724930354846, -76.71049222482849],
-        permit: ["P"]
+        permit: ["P"],
+        hours: '8am-4pm'
     },
     "PL08": {
         name: "Lot 8",
         coordinates: [39.256602511799954, -76.71511389077017],
-        permit: ["D", "E", "V"]
+        permit: ["D", "E", "Ev"],
+        hours: '8am-4pm'
     },
     "PL09": {
         name: "Lot 9",
         coordinates: [39.25455997242194, -76.71515785429784],
-        permit: ["P"]
+        permit: ["P"],
+        hours: '8am-4pm'
     },
     "PL10": {
         name: "Lot 10",
         coordinates: [39.25781949657474, -76.71376201226846],
-        permit: []
+        permit: [],
+        hours: 'N/A'
     },
     "PL11": {
         name: "Lot 11",
         coordinates: [39.2561982639421, -76.7081236897295],
-        permit: []
+        permit: [],
+        hours: 'N/A'
     },
     "PL12": {
         name: "Lot 12",
         coordinates: [39.256432302456744, -76.7066948750532],
-        permit: []
+        permit: [],
+        hours: 'N/A'
     },
     "PL20": {
         name: "Lot 20",
         coordinates: [39.26073152963298, -76.71413100212246],
-        permit: ["B"]
+        permit: ["B"],
+        hours: '8am-4pm'
     },
     "PL21": {
         name: "Lot 21",
         coordinates: [39.2593250315711, -76.71522197295594],
-        permit: ["B"]
+        permit: ["B"],
+        hours: '8am-4pm'
     },
     "PL22": {
         name: "Lot 22",
         coordinates: [39.257477458539725, -76.71791355902123],
-        permit: ["A"]
+        permit: ["A"],
+        hours: '8am-4pm'
     },
     "PL23": {
         name: "Lot 23",
         coordinates: [39.25474244464447, -76.70525981053154],
-        permit: ["A", "C"]
+        permit: ["A", "C"],
+        hours: '8am-4pm'
     },
     "PL24": {
         name: "Lot 24",
         coordinates: [39.254195670528176, -76.70424557501731],
-        permit: ["D"]
+        permit: ["D"],
+        hours: '8am-4pm'
     },
     "PL25": {
         name: "Lot 25",
-        coordinates: [39.25454361818973, -76.70280767149418],
-        permit: ["A", "C", "D", "E"]
+        coordinates: [39.2546032434634, -76.70298655623105],
+        permit: ["A", "C", "D", "E"],
+        hours: '8am-4pm'
     },
     "PL26": {
         name: "Lot 26",
         coordinates: [39.25258662462593, -76.70500963728949],
-        permit: []
+        permit: [],
+        hours: 'N/A'
     },
     "PL27": {
         name: "Lot 27",
-        coordinates: [39.25226214483385, -76.70625848779362],
-        permit: ["B"]
+        coordinates: [39.25219648054447, -76.70629642879041],
+        permit: ["B"],
+        hours: '8am-4pm'
     },
     "PL28": {
         name: "Lot 28",
         coordinates: [39.25132875800769, -76.70707982943894],
-        permit: ["D"]
+        permit: ["D"],
+        hours: '8am-4pm'
     },
     "PL29": {
         name: "Lot 29",
         coordinates: [39.258444486254504, -76.71600791980624],
-        permit: ["A"]
+        permit: ["A"],
+        hours: '8am-4pm'
     },
     "PL30": {
         name: "Lot 30",
         coordinates: [39.25836602308304, -76.71738393372962],
-        permit: ["D"]
+        permit: ["D"],
+        hours: '8am-4pm'
     },
     "PL31": {
         name: "Lot 31",
         coordinates: [39.25995178811675, -76.71458390539118],
-        permit: ["A", "D", "E", "C"]
+        permit: ["A", "D", "E"],
+        hours: '8am-4pm'
     },
     "PL13": {
         name: "Satellite Lot 1",
         coordinates: [39.23793893319504, -76.7132164201798],
-        permit: []
+        permit: [],
+        hours: 'N/A'
     },
     "PL14": {
         name: "Stadium Lot",
         coordinates: [39.253343156198426, -76.70626332992137],
-        permit: ["A", "V"]
+        permit: ["A", "Ev"],
+        hours: '8am-4pm'
     },
     "PL15": {
         name: "Commons Drive Garage",
         coordinates: [39.253525409090116, -76.70989125855588],
-        permit: ["A", "P"]
+        permit: ["A", "P"],
+        hours: '8am-4pm'
     },
     "PL16": {
         name: "Administration Drive Garage",
         coordinates: [39.25195444924986, -76.71274252391034],
-        permit: ["E", "P"]
+        permit: ["E", "P"],
+        hours: '8am-4pm'
     },
     "PL17": {
         name: "Walker Avenue Garage",
         coordinates: [39.257336151264234, -76.71236811895179],
-        permit: ["C", "E", "P"]
+        permit: ["C", "E", "P"],
+        hours: '8am-4pm'
+    },
+    "ACBL01": { // 900 walker
+        name: "900 Walker Accessible Parking",
+        coordinates: [39.26027834399157, -76.71455877102214],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL02": { // walker building 1
+        name: "Walker Avenue Apartments Accessible Parking",
+        coordinates: [39.25976967007855, -76.71343527054894],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL03": { // lot 21
+        name: "Lot 21 Accessible Parking",
+        coordinates: [39.25892555809007, -76.71548232650288],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL04": { // lot 30
+        name: "Lot 30 Accessible Parking",
+        coordinates: [39.258442677241916, -76.71749605830176],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL05": { // lot 8 central planet
+        name: "Lot 8 Accessible Parking",
+        coordinates: [39.2571884711202, -76.71448033364592],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL06": { // lot 8 PAHB
+        name: "Lot 8 Accessible Parking",
+        coordinates: [39.25602398898226, -76.71533121184648],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL07": { // lot 9
+        name: "Lot 9 Accessible Parking",
+        coordinates: [39.25456835908052, -76.7149700833101],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL08": { // admin garage
+        name: "Admin Garage Accessible Parking",
+        coordinates: [39.25197361553284, -76.71322876594526],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL09": { // walker avenue garage
+        name: "Walker Avenue Garage Accessible Parking",
+        coordinates: [39.257647816786196, -76.71220416207188],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL10": { // lot 6
+        name: "Lot 6 Accessible Parking",
+        coordinates: [39.25847855440456, -76.71197885651974],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL11": { // lot 7
+        name: "Lot 7 Accessible Parking",
+        coordinates: [39.25706629458682, -76.71047145507657],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL12": { // lot 5
+        name: "Lot 5 Accessible Parking",
+        coordinates: [39.25779735027527, -76.70836323881832],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL13": { // lot 11 top
+        name: "Lot 11 Accessible Parking",
+        coordinates: [39.256592765796, -76.70778924609057],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL14": { // lot 11 bottom
+        name: "Lot 11 Accessible Parking",
+        coordinates: [39.256177387044474, -76.70817011976206],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL15": { // susquehanna
+        name: "Susquehanna Hall Accessible Parking",
+        coordinates: [39.255575083483464, -76.7091732659109],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL16": { // lot 12
+        name: "Lot 12 Accessible Parking",
+        coordinates: [39.256434922155364, -76.70660907411937],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL17": { // patapsco
+        name: "Patapsco Hall Accessible Parking",
+        coordinates: [39.254972774743344, -76.70707041405949],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL18": { // lot 23
+        name: "Lot 23 Accessible Parking",
+        coordinates: [39.25474015755744, -76.705772224905],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL19": { // lot 4
+        name: "Lot 4 Accessible Parking",
+        coordinates: [39.25500185181207, -76.708540264539],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL20": { // lot 2
+        name: "Lot 2 Accessible Parking",
+        coordinates: [39.25442446157903, -76.70863145964344],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL21": { // lot 1
+        name: "Lot 1 Accessible Parking",
+        coordinates: [39.25351890471411, -76.70894796031216],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL22": { // commons garage
+        name: "Commons Garage Accessible Parking",
+        coordinates: [39.25335690019146, -76.70952195302834],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL23": { // arena entrance
+        name: "Chesepeake Arena Accessible Parking",
+        coordinates: [39.25231424670389, -76.7088084854659],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL24": { // lot 28
+        name: "Lot 28 Accessible Parking",
+        coordinates: [39.25150794695797, -76.70737930196222],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL25": { // satadium lot left
+        name: "Stadium Lot Accessible Parking",
+        coordinates: [39.253550292058016, -76.70642264649823],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL26": { // warehouse
+        name: "Warehouse Accessible Parking",
+        coordinates: [39.2532467735017, -76.70594431876624],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL27": { // facilities
+        name: "Facilities Accessible Parking",
+        coordinates: [39.252876376195395, -76.70516703620174],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL28": { // lot 25 left
+        name: "Lot 25 Accessible Parking",
+        coordinates: [39.2549804127048, -76.70293484005094],
+        permit: ["♿"],
+        hours: 'Always enforced'
+    },
+    "ACBL29": { // lot 25 right
+        name: "Lot 25 Accessible Parking",
+        coordinates: [39.254754064624464, -76.70214427060502],
+        permit: ["♿"],
+        hours: 'Always enforced'
     }
+};
+
+export const permit_names = {
+    "A": "A",
+    "B": "B",
+    "C": "C",
+    "D": "D",
+    "E": "E",
+    "P": "Paid/Visitor Parking",
+    "V": "Visitor Parking",
+    "Ev": "Event Parking",
+    "♿": "Accessible Parking" 
 };
 
 export const food = {
@@ -942,100 +1157,10 @@ export const buildingNames = {
 };
 
 export const shorthandInputs = {
-    /*
-    "900 walker": "900 Walker",
-    //"walker ave apts": "Walker Avenue Apartments",
-    "army rotc": "Army ROTC",
-    "naval rotc": "Naval ROTC",
-    "alumni house": "Alumni House",
-    //"west hill cho": "West Hill Apartments CHO (Choptank)",
-    //"west hill tan": "West Hill Apartments TAN (Tuckahoe)",
-    //"west hill mag": "West Hill Apartments MAG (Magothy)",
-    //"west hill wye": "West Hill Apartments WYE (Wye)",
-    //"west hill sev": "West Hill Apartment SEV (Severn)",
-    //"west hill chs": "West Hill Apartments CHS (Chester)",
-    "acc": "Apartment Community Center (ACC)",
-    //"terrace gun": "Terrace Apartments GUN (Gunpowder)",
-    //"terrace nan": "Terrace Apartments NAN (Nanticoke)",
-    //"terrace mon": "Terrace Apartments MON (Monocacy)",
-    //"terrace tuc": "Terrace Apartments TUC (Tuckahoe)",
-    //"terrace chi": "Terrace Apartments CHI (Chincoteague)",
-    //"terrace ant": "Terrace Apartments ANT (Antietam)",
-    //"terrace sas": "Terrace Apartments SAS (Sassafras)",
-    //"terrace wic": "Terrace Apartments WIC (Wicomico)",
-    //"hillside ptx": "Hillside Apartments PTX (Patuxent)",
-    //"hillside elk": "Hillside Apartments ELK (Elk)",
-    //"hillside dpc": "Hillside Apartments DPC (Deep Creek)",
-    //"hillside cas": "Hillside Apartments CAS (Casselman)",
-    //"hillside bre": "Hillside Apartments BRE (Breton)",
-    //"hillside sdl": "Hillside Apartments SDL (Sideling)",
-    //"hillside poc": "Hillside Apartments POC (Pocomoke)",
-    //"hillside man": "Hillside Apartments MAN (Manokin)",
-    "erickson hall": "Erickson Hall",
-    "ymca preschool": "YMCA Preschool Center",
-    "harbor": "Harbor Hall",
-    "chesapeake": "Chesapeake Hall",
-    //"satellite": "Satellite Plant",
-    "the center for well-being": "The Center for Well-Being",
-    "susquehanna": "Susquehanna Hall",
-    "true grits": "True Grits",
-    "potomac": "Potomac Hall",
-    "patapsco": "Patapsco Hall",
-    "greenhouse": "Greenhouse",
-    "central plant": "Central Plant",
-    "kuhn library": "Albin O. Kuhn Library & Gallery",
-    "public policy": "Public Policy Building",
-    "physics": "Physics Building",
-    "warehouse": "Warehouse",
-    "facilities": "Facilities Management Building",
-    "chesapeake arena": "Chesapeake Arena",
-    "ils building": "Interdisciplinary Life Sciences Building",
-    "the commons": "The Commons",
-    "lecture hall": "Lecture Hall 1",
-    //"bio sci": "Biological Sciences Building",
-    "retriever activities": "Retriever Activities Center",
-    "math & psych": "Math & Psychology Building",
-    "sondheim": "Sondheim Building",
-    "meyerhoff chem": "Meyerhoff Chemistry Building",
-    "university center": "University Center",
-    "sherman": "Sherman Hall",
-    "admin building": "Administration Building",
-    //"it/eng building": "Information Technology/Engineering Building",
-    "engineering building": "Engineering Building",
-    "fine arts": "Fine Arts Building",
-    "performing arts": "Performing Arts & Humanities Building",
-    "bwtech 5525": "BWTech 5525",
-    "bwtech 5523": "BWTech 5523",
-    "bwtech 5521": "BWTech 5521",
-    "bwtech 5522": "BWTech 5522",
-    "bwtech 5520": "BWTech 5520",
-    "umbc stadium": "UMBC Stadium Complex",
-    "stadium ticket booth": "UMBC Stadium Ticket Booth",
-    "soccer park ticket booth": "Retriever Soccer Park Ticket Booth",
-    "tech resource": "Technology Resource Center",
-    "tech 2": "Technology 2 Building",
-    "grits": "True Grits",
-    "army": "Army ROTC",
-    "math": "Math & Psychology Building",
-    */
     "pahb": "Performing Arts & Humanities Building",
-    //"commons": "The Commons",
     "ilsb": "Interdisciplinary Life Sciences Building",
     "ite": "Information Technology/Engineering Building",
     "uc": "University Center",
-    /*
-    "retriever activities": "Retriever Activities Center",
-    "sci building": "Biological Sciences Building",
-    "chesa": "Chesapeake Hall",
-    "meyerhoff": "Meyerhoff Chemistry Building",
-    "science": "Biological Sciences Building",
-    "library": "Albin O. Kuhn Library & Gallery",
-    "stadium": "UMBC Stadium Complex",
-    "satellite plant": "Satellite Plant",
-    "susquehanna": "Susquehanna Hall",
-    "patapsco": "Patapsco Hall",
-    //"pocomoke": "Hillside Apartments POC (Pocomoke)",
-    */
     "900 walker": "900 Walker",
     "walker avenue apartments": "Walker Avenue Apartments",
     "army rotc": "Army ROTC",
