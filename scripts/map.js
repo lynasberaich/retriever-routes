@@ -1,8 +1,17 @@
 import { buildings, food, parking, resources, shorthandInputs, buildingNames, permit_names } from './data.js';
 import { umbc_polygons } from './polygons.js';
 
+// Define the geographical bounds for UMBC's campus
+var umbcBounds = [
+    [39.2500, -76.7150], // Southwest corner
+    [39.2600, -76.7050]  // Northeast corner
+];
+
 // initialize the map centered on UMBC
-var map = L.map('map').setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
+var map = L.map('map', {
+    maxBounds: umbcBounds, // Set the max bounds
+    maxBoundsViscosity: 1.0 // Ensures the map bounces back when dragged out of bounds
+}).setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
 
 var selectedParkStart = "";
 var selectedParkEnd = "";
@@ -11,6 +20,7 @@ var sel_destination_flag = 0;
 var sel_start_flag = 0;
 
 let activeMarkers = [];
+
 
 // add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
