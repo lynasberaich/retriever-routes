@@ -355,3 +355,11 @@ button {
 #routing-search button:hover {
     background: #e5a313;
 }
+
+.leaflet-routing-container .leaflet-routing-instruction-distance {
+    width: 95px;
+    min-width: 95px;
+    max-width: 95px;
+    text-align: right;
+    padding-right: 5px !important;
+}

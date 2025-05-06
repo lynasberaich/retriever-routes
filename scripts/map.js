@@ -705,54 +705,57 @@ L.Routing.Google = L.Class.extend({
 
     // Private helper method to convert Google route format to LRM format
     _convertRoute: function(googleRouteResponse) {
-        var route = googleRouteResponse.routes[0]; // Get the first route
-        var leg = route.legs[0]; // Assuming only one leg (no complex waypoints)
-        var coordinates = []; // Array for route geometry (L.LatLng)
-        var instructions = []; // Array for LRM instructions
-        var currentCoordIndex = 0; // Keep track of coordinate index for instructions
-
-        // Process each step in the leg
-        leg.steps.forEach(function(step, i) {
-            // Decode the polyline for this step's path
-            var stepPath = google.maps.geometry.encoding.decodePath(step.polyline.points);
-            var stepCoords = stepPath.map(function(latLng) {
+        const route = googleRouteResponse.routes[0];
+        const leg = route.legs[0]; // Assuming only one leg
+        const coordinates = [];
+        const instructions = [];
+        let currentCoordIndex = 0; // Index for matching geometry points to instructions
+        const totalSteps = leg.steps.length;
+    
+        // Process each step from Google Directions
+        leg.steps.forEach((step, i) => {
+            // Decoding the geometry for this step
+            const path = google.maps.geometry.encoding.decodePath(step.polyline.points);
+            const stepCoords = path.map(function(latLng) {
                 return L.latLng(latLng.lat(), latLng.lng());
             });
-
+    
             // Add coordinates to the main array, avoiding duplicates at step boundaries
             if (coordinates.length > 0 && stepCoords.length > 0) {
                 if (coordinates[coordinates.length - 1].equals(stepCoords[0])) {
-                    stepCoords = stepCoords.slice(1); // Remove duplicate start point
+                    stepCoords.splice(0, 1); // Remove duplicate start point
                 }
             }
-            coordinates = coordinates.concat(stepCoords);
 
-            // Create the instruction object for LRM
-            // *** This is the SIMPLE version WITHOUT type/modifier for icons ***
+            coordinates.push(...stepCoords);
+    
+            // Create the instruction object for LRM, adding index information
             instructions.push({
-                text: step.instructions,       // Raw HTML instructions from Google
-                distance: step.distance.value, // Meters
-                time: step.duration.value,     // Seconds
-                index: currentCoordIndex       // Index in the coordinates array for start of step
-                // No 'type' or 'modifier' properties in this reverted version
+                text: step.instructions,
+                distance: step.distance.value, 
+                time: step.duration.value,     
+                index: currentCoordIndex,     
+    
+                // adding this for icon logic
+                instructionIndex: i,
+                totalInstructions: totalSteps
             });
-
-            // Update the starting index for the next step
+    
+            // Update the geometry index for the start of the next step
             currentCoordIndex = coordinates.length;
         });
-
-        // Construct the object LRM expects
+    
+        // Construct the route object structure that LRM expects
         return {
-            name: route.summary || '', // Road names summary from Google (might be empty for walking)
+            name: route.summary || '', // Use Google's summary (e.g., road names) if available
             summary: {
-                totalDistance: leg.distance.value, // Meters
-                totalTime: leg.duration.value      // Seconds
+                totalDistance: leg.distance.value,
+                totalTime: leg.duration.value     
             },
             coordinates: coordinates,          // Array of L.LatLng for the route line
-            instructions: instructions,        // Array of instruction objects
-            waypoints: [], // LRM waypoints; can be complex, start simple
-                           // Could use route.legs[0].start_location/end_location, but LRM often recalculates
-            inputWaypoints: [] // Original input waypoints if needed by LRM features
+            instructions: instructions,        // Array of instruction objects (now with index info)
+            waypoints: [],
+            inputWaypoints: []
         };
     }
 });
@@ -761,11 +764,27 @@ L.Routing.Google = L.Class.extend({
     Google's html tags well */
 L.Routing.HtmlFormatter = L.Routing.Formatter.extend({
     options: {
-        ...L.Routing.Formatter.prototype.options
+        ...L.Routing.Formatter.prototype.options,
     },
 
+    // Properties to store info about the last processed instruction
+    _lastInstructionIndex: -1,
+    _lastTotalSteps: -1,
+
     formatInstruction: function(instruction, i) {
+        // Store index and total count from the data provided by the router
+        this._lastInstructionIndex = instruction.instructionIndex;
+        this._lastTotalSteps = instruction.totalInstructions;
+        
         return instruction.text;
+    },
+
+    // Getter methods for the builder
+    getLastInstructionIndex: function() {
+        return this._lastInstructionIndex;
+    },
+    getTotalSteps: function() {
+        return this._lastTotalSteps;
     }
 });
 
@@ -774,6 +793,13 @@ L.Routing.CustomItineraryBuilder = L.Routing.ItineraryBuilder.extend({
 
     // to store the steps container <tbody> reference
     _stepsContainer: null,
+    formatter: null,
+
+    initialize: function(options) {
+        L.Routing.ItineraryBuilder.prototype.initialize.call(this, options);
+        this.formatter = this.options.formatter;
+        if (!this.formatter) { console.error("No formatter was passed into the builder"); this.formatter = new L.Routing.Formatter();}
+    },
 
     // override createStepsContainer to store the reference
     createStepsContainer: function() {
@@ -785,48 +811,65 @@ L.Routing.CustomItineraryBuilder = L.Routing.ItineraryBuilder.extend({
 
     // override createStep to perform custom DOM creation and use innerHTML
     createStep: function(text, distance, stepsContainer_param_ignored) {
+        // retrieve the stored container reference (the <tbody>)
+        var actualStepsContainer = this._stepsContainer;
 
-    // retrieve the stored container reference (the <tbody>)
-    var actualStepsContainer = this._stepsContainer;
-
-    // validate the stored container before attempting to append it
-    if (!actualStepsContainer || typeof actualStepsContainer.appendChild !== 'function') {
-         console.error("Invalid stored _stepsContainer! Cannot create or append step.");
+        // validate the stored container before attempting to append it
+        if (!actualStepsContainer || typeof actualStepsContainer.appendChild !== 'function') {
+            console.error("Invalid stored _stepsContainer! Cannot create or append step.");
          
-         return null;
-    }
+            return null;
+        }
 
-    try {
-        // create the row element <tr>, don't append to actualStepsContainer yet
-        var step = L.DomUtil.create('tr', '');
+         // Get index and total steps from the formatter
+         let index = -1;
+         let total = -1;
+         if (this.formatter && typeof this.formatter.getLastInstructionIndex === 'function') {
+             index = this.formatter.getLastInstructionIndex();
+             total = this.formatter.getTotalSteps();
+         }
 
-        // create icon Cell
-        var iconCell = L.DomUtil.create('td', 'leaflet-routing-icon', step);
-        // Add icon logic here later if needed
+        try {
+            // create the row element <tr>, don't append to actualStepsContainer yet
+            var step = L.DomUtil.create('tr', '');
 
-        // create instruction cell
-        var instructionCell = L.DomUtil.create('td', 'leaflet-routing-instruction-text', step);
-        instructionCell.innerHTML = text; // Render HTML
+            // create cells
+            var iconCell = L.DomUtil.create('td', 'leaflet-routing-icon', step);
+            var instructionCell = L.DomUtil.create('td', 'leaflet-routing-instruction-text', step);
+            var distanceCell = L.DomUtil.create('td', 'leaflet-routing-instruction-distance', step);
 
-        // distance cell
-        var distanceCell = L.DomUtil.create('td', 'leaflet-routing-instruction-distance', step);
-        distanceCell.textContent = distance;
+             // icon logic -- just want start and end icons for now
+             if (index === 0) {
+                L.DomUtil.addClass(iconCell, 'leaflet-routing-icon-depart'); // Add depart icon
+                console.log("Applied depart icon");
+            } else if (index !== -1 && total !== -1 && index === total - 1) {
+                L.DomUtil.addClass(iconCell, 'leaflet-routing-icon-arrive'); // Add arrive icon
+                console.log("Applied arrive icon");
+            } else {
+                // Intermediate steps: Keep base 'leaflet-routing-icon' class,
+                // but don't add a specific maneuver class.
+                // CSS might be needed if the base class still shows a default arrow.
+                console.log("Leaving intermediate icon default/blank");
+            }
 
-        // append the created step <tr> to the stored container <tbody>
-        actualStepsContainer.appendChild(step);
+            instructionCell.innerHTML = text;
+            distanceCell.textContent = distance;
 
-        // return the element
-        return step;
+            // append the created step <tr> to the stored container <tbody>
+            actualStepsContainer.appendChild(step);
 
-    } catch (e) {
-        console.error("Error during custom createStep execution:", e);
-        return null;
-    }
+            // return the element
+            return step;
+
+        } catch (e) {
+            console.error("Error during custom createStep execution:", e);
+            return null;
+        }
     }
 });
 
 var customFormatter = new L.Routing.HtmlFormatter ({units: 'imperial'});
-var customItineraryBuilder = new L.Routing.CustomItineraryBuilder({});
+var customItineraryBuilder = new L.Routing.CustomItineraryBuilder({formatter: customFormatter});
 // we'll want the user to be able to choose their travel mode
 let travel = 'WALKING'; // Can be 'WALKING', 'BICYCLING', 'TRANSIT'
 // Routing Control
@@ -838,7 +881,7 @@ const routeCtrl = L.Routing.control({
     /*/ OSRM routing service
     router: L.Routing.osrmv1({
         serviceUrl: 'https://router.project-osrm.org/route/v1'
-    }),*/
+    }), */
     // Google Router
     router: new L.Routing.Google({
         travelMode: travel,
