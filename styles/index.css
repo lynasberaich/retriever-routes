@@ -14,9 +14,11 @@ p {
 }
 
 h1 {
-    font-size: 30px;
+    font-size: 50px;
     font-family: 'red-hat-display', sans-serif;
     text-align: center;
+    margin-bottom: 2px;
+    margin-top: 10px;
 }
 
 button {
@@ -31,6 +33,7 @@ button {
     height: 750px;
     width: 99%;
     border: 5px solid rgba(0, 0, 0, 0.8);
+    margin-top: 0;
 }
 
 #icon {
@@ -158,7 +161,7 @@ button {
     display: inline-block; /* Makes it act like a button */
     cursor: pointer;
     font-size: 16px;
-    margin: 10px 0;
+    margin-bottom: 5px;
     transition: background-color 0.3s;
 }
 
@@ -292,6 +295,7 @@ button {
     .dropdown {
         flex-direction: column;
         align-items: flex-start; 
+    }
 
     .dropdown button {
         margin-bottom: 5px; 
@@ -304,7 +308,6 @@ button {
         width: 100%; 
     }
 
-    /
     .link-box {
         font-size: 14px; 
         padding: 8px 15px; 
@@ -314,7 +317,6 @@ button {
     .autocomplete-items {
         max-height: 150px; 
     }
-}
 }
 
 /* routing search box */
@@ -364,6 +366,7 @@ button {
     max-width: 95px;
     text-align: right;
     padding-right: 5px !important;
+}
 
 body.light-teal-mode {
     background-color: #007176; /* Teal color */
@@ -492,11 +495,11 @@ body.font-size-large {
 }
 
 body.font-size-medium h1 {
-    font-size: 45px;
+    font-size: 60px;
 }
 
 body.font-size-large h1 {
-    font-size: 50px;
+    font-size: 70px;
 }
 
 body.font-size-medium p {
