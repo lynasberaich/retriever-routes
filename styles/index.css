@@ -14,8 +14,9 @@ p {
 }
 
 h1 {
-    font-size: 40px;
+    font-size: 30px;
     font-family: 'red-hat-display', sans-serif;
+    text-align: center;
 }
 
 button {
