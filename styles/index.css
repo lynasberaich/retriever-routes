@@ -359,6 +359,7 @@ button {
     background: #e5a313;
 }
 
+
 .leaflet-routing-container .leaflet-routing-instruction-distance {
     width: 95px;
     min-width: 95px;
@@ -522,4 +523,5 @@ body.font-size-large .autocomplete-items div,
 body.font-size-large #search-input,
 body.font-size-large button {
     font-size: 20px;
+
 }
