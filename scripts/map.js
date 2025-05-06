@@ -18,6 +18,14 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 22
 }).addTo(map);
 
+const pawPrintIcon = L.icon({
+    iconUrl: 'assets/pawprint.png', // Replace with the actual path to your pawprint image
+    iconSize: [32, 32], // Size of the icon
+    iconAnchor: [16, 16], // Anchor point of the icon
+    popupAnchor: [0, -16] // Offset the popup
+});
+
+
 // Add invisible clickable building areas
 function addClickableBuildings() {
     // Define building information with polygon coordinates and details
@@ -302,17 +310,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+
 //#region ROUTING
 // Leaflet Routing Machine
 const routeCtrl = L.Routing.control({
     waypoints: [
-      L.latLng(buildings["Information Technology/Engineering Building"].coordinates),
+      L.latLng(buildings["Administration Building"].coordinates),
       L.latLng(buildings["Retriever Soccer Park Ticket Booth"].coordinates)
     ],
     // OSRM routing service
     router: L.Routing.osrmv1({
         serviceUrl: 'https://router.project-osrm.org/route/v1'
     }),
+    lineOptions: {
+        styles: [{
+            color: 'transparent',  // Change to a visible color
+            opacity: 1,     // Make it visible
+            weight: 1       // Increase weight to make it thicker
+        }]
+    },    
     routeWhileDragging: true,
     position: 'bottomleft',
     fitSelectedRoutes: true,
@@ -320,6 +336,43 @@ const routeCtrl = L.Routing.control({
     collapsible: true,
     units: 'imperial'
   }).addTo(map);
+
+  routeCtrl.on('routeselected', function(event) {
+    const routeCoordinates = event.route.coordinates;
+
+    // Clear previous paw prints
+    activeMarkers.forEach(marker => map.removeLayer(marker));
+    activeMarkers = [];
+
+    const intervalDistance = 25; // in meters (change to make closer/farther)
+    let accumulatedDistance = 0;
+    let lastPrintCoord = routeCoordinates[0];
+
+    for (let i = 1; i < routeCoordinates.length; i++) {
+        const currentCoord = routeCoordinates[i];
+        const segmentDistance = lastPrintCoord.distanceTo(currentCoord);
+
+        accumulatedDistance += segmentDistance;
+
+        while (accumulatedDistance >= intervalDistance) {
+            // Calculate how far along the segment to place the paw print
+            const overshoot = accumulatedDistance - intervalDistance;
+            const fraction = 1 - (overshoot / segmentDistance);
+
+            const lat = lastPrintCoord.lat + fraction * (currentCoord.lat - lastPrintCoord.lat);
+            const lng = lastPrintCoord.lng + fraction * (currentCoord.lng - lastPrintCoord.lng);
+
+            const pawPrintMarker = L.marker([lat, lng], { icon: pawPrintIcon }).addTo(map);
+            activeMarkers.push(pawPrintMarker);
+
+            // Prepare for next interval
+            accumulatedDistance -= intervalDistance;
+            lastPrintCoord = L.latLng(lat, lng);
+        }
+
+        lastPrintCoord = currentCoord;
+    }
+});
 
 // Autocomplete for routing inputs
 document.addEventListener('DOMContentLoaded', function() {
