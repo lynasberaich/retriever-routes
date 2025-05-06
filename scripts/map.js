@@ -536,7 +536,7 @@ const routeCtrl = L.Routing.control({
         travelMode: travel,
         unitSystem: google.maps.UnitSystem.IMPERIAL
     }),
- UI_pawprints
+ //UI_pawprints
     lineOptions: {
         styles: [{
             color: 'transparent',  // Change to a visible color
