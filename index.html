@@ -15,6 +15,7 @@
 
     <!-- Toggle Button -->
     <button id="toggle-btn" class="link-box">Toggle View</button>
+    <button id="color-scheme-toggle" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">Toggle Color Scheme</button>
     <div id="map">
         <!-- Image overlay -->
         <img id="icon" src="assets/images/icon_no_bg.png" alt="Retriever Routes Icon">
@@ -108,6 +109,10 @@
             } else {
                 mainDiv.style.display = 'none'; 
             }
+        });
+
+        document.getElementById('color-scheme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('light-teal-mode');
         });
     </script>
 </body>

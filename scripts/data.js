@@ -1242,4 +1242,3 @@ export const data = {
     "food": food,
     "resources": resources
 };
-

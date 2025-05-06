@@ -356,6 +356,43 @@ button {
     background: #e5a313;
 }
 
+body.light-teal-mode {
+    background-color: #007176; /* Teal color */
+    color: #333; /* Dark grey text */
+}
+
+body.light-teal-mode h1,
+body.light-teal-mode p,
+body.light-teal-mode button {
+    color: #333; /* Dark grey text */
+}
+
+body.light-teal-mode #map {
+    border-color: #ccc; /* Light grey border */
+}
+
+body.light-teal-mode .link-box {
+    background-color: #e0f7f9; /* Light teal background */
+    color: #fff; /* White text */
+}
+
+body.light-teal-mode .link-box a {
+    color: #fff; /* White text */
+}
+
+body.light-teal-mode .dropdown-content {
+    background-color: #e0f7f9; /* Light teal background */
+    color: #333; /* Dark grey text */
+}
+
+body.light-teal-mode .autocomplete-items {
+    background-color: #e0f7f9; /* Light teal background */
+    color: #333; /* Dark grey text */
+}
+
+/* Add more styles as needed for other elements */
+
+
 /* permit marker styling */
 
 .permit-marker {
