@@ -14,8 +14,9 @@ p {
 }
 
 h1 {
-    font-size: 40px;
+    font-size: 30px;
     font-family: 'red-hat-display', sans-serif;
+    text-align: center;
 }
 
 button {
@@ -356,10 +357,168 @@ button {
     background: #e5a313;
 }
 
+
 .leaflet-routing-container .leaflet-routing-instruction-distance {
     width: 95px;
     min-width: 95px;
     max-width: 95px;
     text-align: right;
     padding-right: 5px !important;
+
+body.light-teal-mode {
+    background-color: #007176; /* Teal color */
+    color: #333; /* Dark grey text */
+}
+
+body.light-teal-mode h1,
+body.light-teal-mode p,
+body.light-teal-mode button {
+    color: #333; /* Dark grey text */
+}
+
+body.light-teal-mode #map {
+    border-color: #ccc; /* Light grey border */
+}
+
+body.light-teal-mode .link-box {
+    background-color: #e0f7f9; /* Light teal background */
+    color: #fff; /* White text */
+}
+
+body.light-teal-mode .link-box a {
+    color: #fff; /* White text */
+}
+
+body.light-teal-mode .dropdown-content {
+    background-color: #e0f7f9; /* Light teal background */
+    color: #333; /* Dark grey text */
+}
+
+body.light-teal-mode .autocomplete-items {
+    background-color: #e0f7f9; /* Light teal background */
+    color: #333; /* Dark grey text */
+}
+
+/* Add more styles as needed for other elements */
+
+
+/* permit marker styling */
+
+.permit-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    background-color: #333;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+    border: 2px solid white;
+}
+
+.parking-info-popup .leaflet-popup-content-wrapper {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    border: 3px solid #FDB515;
+}
+
+.parking-info-popup .leaflet-popup-tip {
+    background-color: #FDB515;
+}
+
+.parking-popup h3 {
+    color: #000;
+    margin-top: 0;
+    border-bottom: 2px solid #FDB515;
+    padding-bottom: 5px;
+    font-family: 'red-hat-display', sans-serif;
+}
+
+.parking-popup p {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.parking-popup ul {
+    margin: 5px 0;
+    padding-left: 20px;
+    font-family: 'red-hat-display', sans-serif;
+}
+
+.parking-popup li {
+    margin: 3px 0;
+    font-size: 14px;
+    font-family: 'red-hat-display', sans-serif;
+}
+
+/* Font size controls */
+.font-size-controls {
+    position: absolute;
+    top: 10px;
+    right: 100px; /* Positioned to the left of the color scheme toggle */
+    z-index: 1000;
+    display: flex;
+    gap: 5px;
+}
+
+.font-size-btn {
+    background-color: #FDB515;
+    color: black;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.font-size-btn.active {
+    background-color: #007176;
+    color: white;
+}
+
+/* Font size classes */
+body.font-size-normal {
+    font-size: 16px;
+}
+
+body.font-size-medium {
+    font-size: 18px;
+}
+
+body.font-size-large {
+    font-size: 20px;
+}
+
+body.font-size-medium h1 {
+    font-size: 45px;
+}
+
+body.font-size-large h1 {
+    font-size: 50px;
+}
+
+body.font-size-medium p {
+    font-size: larger;
+}
+
+body.font-size-large p {
+    font-size: x-large;
+}
+
+/* Adjust dropdown and other text elements for larger font sizes */
+body.font-size-medium .dropdown p,
+body.font-size-medium .autocomplete-items div,
+body.font-size-medium #search-input,
+body.font-size-medium button {
+    font-size: 18px;
+}
+
+body.font-size-large .dropdown p, 
+body.font-size-large .autocomplete-items div,
+body.font-size-large #search-input,
+body.font-size-large button {
+    font-size: 20px;
+
 }
