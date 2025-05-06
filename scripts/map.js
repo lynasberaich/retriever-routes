@@ -728,6 +728,72 @@ L.Routing.Google = L.Class.extend({
             }
 
             coordinates.push(...stepCoords);
+
+            // Determine LRM Type and Modifier based on Index and Google Maneuver
+        let lrmType = 'Continue';
+        let lrmModifier = 'Straight';
+
+        if (i === 0) {
+            // first step (Depart)
+            lrmType = 'Head';       // This maps to 'depart' icon in getIconName(instr, 0)
+            lrmModifier = '';       // Modifier not relevant for depart
+
+        } else if (i === totalSteps - 1) {
+            // last step (Arrive)
+            lrmType = 'DestinationReached'; // This maps to 'arrive' icon in getIconName
+            lrmModifier = '';
+
+        } else {
+            // intermediate steps
+            const maneuver = (step.maneuver || '').toLowerCase();
+
+            switch (maneuver) {
+                // LRM Icon: bear-left (via SlightLeft modifier)
+                case 'turn-slight-left':
+                    lrmType = 'Left'; lrmModifier = 'SlightLeft'; break;
+
+                // LRM Icon: sharp-left
+                case 'turn-sharp-left':
+                    lrmType = 'Left'; lrmModifier = 'SharpLeft'; break;
+
+                // LRM Icon: turn-left
+                case 'turn-left':
+                    lrmType = 'Left'; lrmModifier = 'Left'; break;
+
+                // LRM Icon: bear-right (via SlightRight modifier)
+                case 'turn-slight-right':
+                    lrmType = 'Right'; lrmModifier = 'SlightRight'; break;
+
+                // LRM Icon: sharp-right
+                case 'turn-sharp-right':
+                    lrmType = 'Right'; lrmModifier = 'SharpRight'; break;
+
+                // LRM Icon: turn-right
+                case 'turn-right':
+                    lrmType = 'Right'; lrmModifier = 'Right'; break;
+
+                // LRM Icon: u-turn
+                case 'uturn-left':
+                case 'uturn-right': // Map both to LRM's Uturn modifier
+                    // Check getIconName: Does it use Type or Modifier for Uturn? Let's set both if unsure.
+                    lrmType = 'Uturn'; lrmModifier = 'Uturn'; break;
+
+                // LRM Icon: continue (via Straight modifier)
+                case 'straight':
+                    lrmType = 'Continue'; lrmModifier = 'Straight'; break;
+
+                // LRM Icon: enter-roundabout
+                case 'roundabout-left':
+                case 'roundabout-right':
+                     lrmType = 'Roundabout';
+                     lrmModifier = '';
+                     break;
+
+                default:
+                    lrmType = 'Continue'; lrmModifier = 'Straight';
+                    break;
+            }
+        }
     
             // Create the instruction object for LRM, adding index information
             instructions.push({
@@ -736,9 +802,11 @@ L.Routing.Google = L.Class.extend({
                 time: step.duration.value,     
                 index: currentCoordIndex,     
     
-                // adding this for icon logic
+                // this is for icon logic
                 instructionIndex: i,
-                totalInstructions: totalSteps
+                totalInstructions: totalSteps,
+                type: lrmType,
+                modifier: lrmModifier
             });
     
             // Update the geometry index for the start of the next step
@@ -752,8 +820,8 @@ L.Routing.Google = L.Class.extend({
                 totalDistance: leg.distance.value,
                 totalTime: leg.duration.value     
             },
-            coordinates: coordinates,          // Array of L.LatLng for the route line
-            instructions: instructions,        // Array of instruction objects (now with index info)
+            coordinates: coordinates,
+            instructions: instructions,
             waypoints: [],
             inputWaypoints: []
         };
@@ -767,24 +835,63 @@ L.Routing.HtmlFormatter = L.Routing.Formatter.extend({
         ...L.Routing.Formatter.prototype.options,
     },
 
-    // Properties to store info about the last processed instruction
-    _lastInstructionIndex: -1,
-    _lastTotalSteps: -1,
+    // Store the last instruction object and its LRM index
+    _lastInstruction: null,
+    _lastInstructionIndex: -1, // LRM's internal index passed to formatInstruction
 
     formatInstruction: function(instruction, i) {
-        // Store index and total count from the data provided by the router
-        this._lastInstructionIndex = instruction.instructionIndex;
-        this._lastTotalSteps = instruction.totalInstructions;
-        
+        this._lastInstruction = instruction;
+        this._lastInstructionIndex = i;
         return instruction.text;
     },
 
-    // Getter methods for the builder
-    getLastInstructionIndex: function() {
-        return this._lastInstructionIndex;
+    // Getter for the builder
+    getIconNameForLastInstruction: function() {
+        // Call the actual LRM logic using the stored instruction and index
+        // Pass null checks just in case
+        return this.getIconName(this._lastInstruction || {}, this._lastInstructionIndex);
     },
-    getTotalSteps: function() {
-        return this._lastTotalSteps;
+
+    // Exact LRM getIconName logic you provided
+    getIconName: function(instr, i) {
+        // Check Type first for special cases
+        switch (instr.type) {
+        case 'Head':
+            if (i === 0) {
+                return 'depart'; // Only 'depart' if it's the first instruction
+            }
+            break; // Fall through to check modifier if not index 0
+        case 'WaypointReached':
+            return 'via';
+        case 'Roundabout':
+            return 'enter-roundabout';
+        case 'DestinationReached':
+            return 'arrive';
+        } // If type didn't match special cases, check modifier
+
+        // Check Modifier for turn specifics
+        switch (instr.modifier) {
+        case 'Straight':
+            return 'continue';
+        case 'SlightRight':
+            return 'bear-right'; // Maps SlightRight modifier to bear-right icon
+        case 'Right':
+            return 'turn-right';
+        case 'SharpRight':
+            return 'sharp-right';
+        case 'TurnAround':
+        case 'Uturn': // Handle both cases if needed
+            return 'u-turn';
+        case 'SharpLeft':
+            return 'sharp-left';
+        case 'Left':
+            return 'turn-left';
+        case 'SlightLeft':
+            return 'bear-left'; // Maps SlightLeft modifier to bear-left icon
+        }
+
+        // Default if nothing else matched (e.g., 'Head' on non-first step)
+        return 'continue';
     }
 });
 
@@ -813,11 +920,8 @@ L.Routing.CustomItineraryBuilder = L.Routing.ItineraryBuilder.extend({
     createStep: function(text, distance, stepsContainer_param_ignored) {
         // retrieve the stored container reference (the <tbody>)
         var actualStepsContainer = this._stepsContainer;
-
-        // validate the stored container before attempting to append it
-        if (!actualStepsContainer || typeof actualStepsContainer.appendChild !== 'function') {
+        if (!actualStepsContainer) {
             console.error("Invalid stored _stepsContainer! Cannot create or append step.");
-         
             return null;
         }
 
@@ -838,19 +942,19 @@ L.Routing.CustomItineraryBuilder = L.Routing.ItineraryBuilder.extend({
             var instructionCell = L.DomUtil.create('td', 'leaflet-routing-instruction-text', step);
             var distanceCell = L.DomUtil.create('td', 'leaflet-routing-instruction-distance', step);
 
-             // icon logic -- just want start and end icons for now
-             if (index === 0) {
-                L.DomUtil.addClass(iconCell, 'leaflet-routing-icon-depart'); // Add depart icon
-                console.log("Applied depart icon");
-            } else if (index !== -1 && total !== -1 && index === total - 1) {
-                L.DomUtil.addClass(iconCell, 'leaflet-routing-icon-arrive'); // Add arrive icon
-                console.log("Applied arrive icon");
-            } else {
-                // Intermediate steps: Keep base 'leaflet-routing-icon' class,
-                // but don't add a specific maneuver class.
-                // CSS might be needed if the base class still shows a default arrow.
-                console.log("Leaving intermediate icon default/blank");
-            }
+             // icon logic
+             let iconName = 'continue'; // Default
+             if (this.formatter && typeof this.formatter.getIconNameForLastInstruction === 'function') {
+                 // Get icon name using the full logic now inside the formatter
+                 iconName = this.formatter.getIconNameForLastInstruction();
+             } else {
+                  console.warn("Formatter or getIconNameForLastInstruction unavailable.");
+             }
+ 
+             // Add the specific class suffix determined by getIconName
+             if (iconName) {
+                 L.DomUtil.addClass(iconCell, 'leaflet-routing-icon-' + iconName);
+             }
 
             instructionCell.innerHTML = text;
             distanceCell.textContent = distance;
@@ -871,7 +975,7 @@ L.Routing.CustomItineraryBuilder = L.Routing.ItineraryBuilder.extend({
 var customFormatter = new L.Routing.HtmlFormatter ({units: 'imperial'});
 var customItineraryBuilder = new L.Routing.CustomItineraryBuilder({formatter: customFormatter});
 // we'll want the user to be able to choose their travel mode
-let travel = 'WALKING'; // Can be 'WALKING', 'BICYCLING', 'TRANSIT'
+let travel = 'WALKING'; // Can be 'DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT'
 // Routing Control
 const routeCtrl = L.Routing.control({
     waypoints: [
