@@ -445,3 +445,71 @@ body.light-teal-mode .autocomplete-items {
     font-size: 14px;
     font-family: 'red-hat-display', sans-serif;
 }
+
+/* Font size controls */
+.font-size-controls {
+    position: absolute;
+    top: 10px;
+    right: 100px; /* Positioned to the left of the color scheme toggle */
+    z-index: 1000;
+    display: flex;
+    gap: 5px;
+}
+
+.font-size-btn {
+    background-color: #FDB515;
+    color: black;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.font-size-btn.active {
+    background-color: #007176;
+    color: white;
+}
+
+/* Font size classes */
+body.font-size-normal {
+    font-size: 16px;
+}
+
+body.font-size-medium {
+    font-size: 18px;
+}
+
+body.font-size-large {
+    font-size: 20px;
+}
+
+body.font-size-medium h1 {
+    font-size: 45px;
+}
+
+body.font-size-large h1 {
+    font-size: 50px;
+}
+
+body.font-size-medium p {
+    font-size: larger;
+}
+
+body.font-size-large p {
+    font-size: x-large;
+}
+
+/* Adjust dropdown and other text elements for larger font sizes */
+body.font-size-medium .dropdown p,
+body.font-size-medium .autocomplete-items div,
+body.font-size-medium #search-input,
+body.font-size-medium button {
+    font-size: 18px;
+}
+
+body.font-size-large .dropdown p, 
+body.font-size-large .autocomplete-items div,
+body.font-size-large #search-input,
+body.font-size-large button {
+    font-size: 20px;
+}
