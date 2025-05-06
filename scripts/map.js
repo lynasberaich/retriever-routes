@@ -634,22 +634,223 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 //#region ROUTING
-// Leaflet Routing Machine
+// Custom Google router
+L.Routing.Google = L.Class.extend({
+    initialize: function(options) {
+        this.options = {
+            travelMode: 'WALKING',
+            unitSystem: google.maps.UnitSystem.IMPERIAL,
+            ...options
+        };
+    },
+
+    // The main routing function called by L.Routing.control
+    route: function(waypoints, callback, context, options) {
+        var _this = this; // Keep reference to 'this' for the callback
+        // Combine default router options, per-route options from control, if any
+        var routeOpts = L.Util.extend({}, this.options, options);
+
+        // Check if Google Maps API is ready
+        if (typeof google === 'undefined' || !google.maps || !google.maps.DirectionsService) {
+            return callback.call(context, {
+                status: -1, // Use a custom error status
+                message: "Google Maps API not loaded or ready."
+            });
+        }
+
+        var directionsService = new google.maps.DirectionsService();
+
+        // Extract L.LatLng objects from LRM waypoints
+        var originLatLng = waypoints[0].latLng;
+        var destinationLatLng = waypoints[waypoints.length - 1].latLng;
+
+        // Build the Google Directions Request object
+        var request = {
+            origin: { lat: originLatLng.lat, lng: originLatLng.lng },
+            destination: { lat: destinationLatLng.lat, lng: destinationLatLng.lng },
+            travelMode: routeOpts.travelMode,
+            unitSystem: routeOpts.unitSystem
+            // Add more options from routeOpts if needed (e.g., provideRouteAlternatives)
+        };
+
+        // Handle intermediate waypoints if present (optional, more complex)
+        if (waypoints.length > 2) {
+            request.waypoints = waypoints.slice(1, -1).map(function(wp) {
+                return { location: { lat: wp.latLng.lat, lng: wp.latLng.lng }, stopover: true };
+            });
+            // request.optimizeWaypoints = true; // Optional
+        }
+
+        // Perform the routing request
+        directionsService.route(request, function(response, status) {
+            if (status === google.maps.DirectionsStatus.OK) {
+                try {
+                    // Convert the Google response to the format LRM expects
+                    const lrmRoutes = [_this._convertRoute(response)]; // LRM expects an array of route objects
+                    // Call LRM's callback with error=null, routes=array
+                    callback.call(context, null, lrmRoutes);
+                } catch (e) {
+                     console.error("Error converting Google route:", e);
+                     callback.call(context, { status: -2, message: "Error processing Google Directions response: " + e.message });
+                }
+            } else {
+                // Pass the Google error status/message back to LRM's callback
+                console.error("Google Directions request failed:", status);
+                callback.call(context, { status: status, message: "Google Directions request failed: " + status });
+            }
+        });
+
+        return this; // LRM expects the router instance to be returned
+    },
+
+    // Private helper method to convert Google route format to LRM format
+    _convertRoute: function(googleRouteResponse) {
+        var route = googleRouteResponse.routes[0]; // Get the first route
+        var leg = route.legs[0]; // Assuming only one leg (no complex waypoints)
+        var coordinates = []; // Array for route geometry (L.LatLng)
+        var instructions = []; // Array for LRM instructions
+        var currentCoordIndex = 0; // Keep track of coordinate index for instructions
+
+        // Process each step in the leg
+        leg.steps.forEach(function(step, i) {
+            // Decode the polyline for this step's path
+            var stepPath = google.maps.geometry.encoding.decodePath(step.polyline.points);
+            var stepCoords = stepPath.map(function(latLng) {
+                return L.latLng(latLng.lat(), latLng.lng());
+            });
+
+            // Add coordinates to the main array, avoiding duplicates at step boundaries
+            if (coordinates.length > 0 && stepCoords.length > 0) {
+                if (coordinates[coordinates.length - 1].equals(stepCoords[0])) {
+                    stepCoords = stepCoords.slice(1); // Remove duplicate start point
+                }
+            }
+            coordinates = coordinates.concat(stepCoords);
+
+            // Create the instruction object for LRM
+            // *** This is the SIMPLE version WITHOUT type/modifier for icons ***
+            instructions.push({
+                text: step.instructions,       // Raw HTML instructions from Google
+                distance: step.distance.value, // Meters
+                time: step.duration.value,     // Seconds
+                index: currentCoordIndex       // Index in the coordinates array for start of step
+                // No 'type' or 'modifier' properties in this reverted version
+            });
+
+            // Update the starting index for the next step
+            currentCoordIndex = coordinates.length;
+        });
+
+        // Construct the object LRM expects
+        return {
+            name: route.summary || '', // Road names summary from Google (might be empty for walking)
+            summary: {
+                totalDistance: leg.distance.value, // Meters
+                totalTime: leg.duration.value      // Seconds
+            },
+            coordinates: coordinates,          // Array of L.LatLng for the route line
+            instructions: instructions,        // Array of instruction objects
+            waypoints: [], // LRM waypoints; can be complex, start simple
+                           // Could use route.legs[0].start_location/end_location, but LRM often recalculates
+            inputWaypoints: [] // Original input waypoints if needed by LRM features
+        };
+    }
+});
+
+/* we need a custom formatter because default LRM formatter doesn't handle
+    Google's html tags well */
+L.Routing.HtmlFormatter = L.Routing.Formatter.extend({
+    options: {
+        ...L.Routing.Formatter.prototype.options
+    },
+
+    formatInstruction: function(instruction, i) {
+        return instruction.text;
+    }
+});
+
+// Custom itinerary builder to handle proper formatting
+L.Routing.CustomItineraryBuilder = L.Routing.ItineraryBuilder.extend({
+
+    // to store the steps container <tbody> reference
+    _stepsContainer: null,
+
+    // override createStepsContainer to store the reference
+    createStepsContainer: function() {
+        // call parent implementation first to get the actual steps container
+        var container = L.Routing.ItineraryBuilder.prototype.createStepsContainer.call(this);
+        this._stepsContainer = container; // store it
+        return container;
+    },
+
+    // override createStep to perform custom DOM creation and use innerHTML
+    createStep: function(text, distance, stepsContainer_param_ignored) {
+
+    // retrieve the stored container reference (the <tbody>)
+    var actualStepsContainer = this._stepsContainer;
+
+    // validate the stored container before attempting to append it
+    if (!actualStepsContainer || typeof actualStepsContainer.appendChild !== 'function') {
+         console.error("Invalid stored _stepsContainer! Cannot create or append step.");
+         
+         return null;
+    }
+
+    try {
+        // create the row element <tr>, don't append to actualStepsContainer yet
+        var step = L.DomUtil.create('tr', '');
+
+        // create icon Cell
+        var iconCell = L.DomUtil.create('td', 'leaflet-routing-icon', step);
+        // Add icon logic here later if needed
+
+        // create instruction cell
+        var instructionCell = L.DomUtil.create('td', 'leaflet-routing-instruction-text', step);
+        instructionCell.innerHTML = text; // Render HTML
+
+        // distance cell
+        var distanceCell = L.DomUtil.create('td', 'leaflet-routing-instruction-distance', step);
+        distanceCell.textContent = distance;
+
+        // append the created step <tr> to the stored container <tbody>
+        actualStepsContainer.appendChild(step);
+
+        // return the element
+        return step;
+
+    } catch (e) {
+        console.error("Error during custom createStep execution:", e);
+        return null;
+    }
+    }
+});
+
+var customFormatter = new L.Routing.HtmlFormatter ({units: 'imperial'});
+var customItineraryBuilder = new L.Routing.CustomItineraryBuilder({});
+// we'll want the user to be able to choose their travel mode
+let travel = 'WALKING'; // Can be 'WALKING', 'BICYCLING', 'TRANSIT'
+// Routing Control
 const routeCtrl = L.Routing.control({
     waypoints: [
       L.latLng(LOCATIONS['ite']),
       L.latLng(LOCATIONS['retriever soccer park ticket booth'])
     ],
-    // OSRM routing service
+    /*/ OSRM routing service
     router: L.Routing.osrmv1({
         serviceUrl: 'https://router.project-osrm.org/route/v1'
+    }),*/
+    // Google Router
+    router: new L.Routing.Google({
+        travelMode: travel,
+        unitSystem: google.maps.UnitSystem.IMPERIAL
     }),
+    formatter: customFormatter,
+    itineraryBuilder: customItineraryBuilder,
     routeWhileDragging: true,
     position: 'bottomleft',
     fitSelectedRoutes: true,
     addWaypoints: false,
     collapsible: true,
-    units: 'imperial'
   }).addTo(map);
 
 // Autocomplete for routing inputs
@@ -725,7 +926,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /* the following block of code will hide the routing search container
-    when we wide the routing instructions box */
+    when we hide the routing instructions box */
 // Get the routing container element
 const routingContainer = document.querySelector('.leaflet-routing-container');
 const routingSearchContainer = document.getElementById('routing-search-container');
