@@ -162,6 +162,7 @@ button {
     cursor: pointer;
     font-size: 16px;
     margin-bottom: 5px;
+    margin-top: 5px;
     transition: background-color 0.3s;
 }
 
@@ -384,11 +385,11 @@ body.light-teal-mode #map {
 
 body.light-teal-mode .link-box {
     background-color: #e0f7f9; /* Light teal background */
-    color: #fff; /* White text */
+    color: black; /* White text */
 }
 
 body.light-teal-mode .link-box a {
-    color: #fff; /* White text */
+    color: black; /* White text */
 }
 
 body.light-teal-mode .dropdown-content {
