@@ -16,6 +16,14 @@
     <!-- Toggle Button -->
     <button id="toggle-btn" class="link-box">Toggle View</button>
     <button id="color-scheme-toggle" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">Toggle Color Scheme</button>
+    
+    <!-- Font Size Controls -->
+    <div style="position: absolute; top: 50px; right: 10px; z-index: 1000;" class="font-size-controls">
+        <button class="font-size-btn active" data-size="normal">A</button>
+        <button class="font-size-btn" data-size="medium">A+</button>
+        <button class="font-size-btn" data-size="large">A++</button>
+    </div>
+    
     <div id="map">
         <!-- Image overlay -->
         <img id="icon" src="assets/images/icon_no_bg.png" alt="Retriever Routes Icon">
@@ -114,6 +122,27 @@
         document.getElementById('color-scheme-toggle').addEventListener('click', function() {
             document.body.classList.toggle('light-teal-mode');
         });
+        
+        // Font size controls
+        document.querySelectorAll('.font-size-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove all font size classes
+                document.body.classList.remove('font-size-normal', 'font-size-medium', 'font-size-large');
+                
+                // Add the selected font size class
+                const size = this.getAttribute('data-size');
+                document.body.classList.add('font-size-' + size);
+                
+                // Update active button
+                document.querySelectorAll('.font-size-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // Set default font size
+        document.body.classList.add('font-size-normal');
     </script>
 </body>
 </html>
