@@ -1,5 +1,6 @@
 body {
-    background-color: 	#FDB515;
+    /* More dramatic gold gradient with higher contrast */
+    background: linear-gradient(135deg, #E29200 0%, #FFE8AA 100%);
     font-family: 'red-hat-display', sans-serif;
 }
 
@@ -48,7 +49,7 @@ button {
 #main-div {
     position: absolute;
     top: 45px; 
-    left: 75%; 
+    left: 65%; 
     z-index: 1000; 
     background-color: rgba(0, 0, 0, 0.8);
     padding: 20px;
@@ -112,6 +113,7 @@ button {
     padding: 0; /* Remove padding */
     cursor: pointer; /* Pointer cursor for interactivity */
     margin-right: 10px; /* Space between the icon and text */
+    width: 10px;
 }
 
 .down-icon {
@@ -134,8 +136,10 @@ button {
     padding: 10px;
     margin-top: 5px;
     position: relative;
-    width: 100%;
+    width: 120%; /* Make wider than the parent */
+    left: 0%; /* Offset to center it */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
 }
 
 /* Optional: Transition effect for smooth expanding */
@@ -150,6 +154,16 @@ button {
     display: block;
     height: auto;
     max-height: 500px;
+}
+
+/* Hide only the title text when dropdown is active, not the building names */
+.dropdown.active > p {
+    display: none;
+}
+
+/* Keep building names visible */
+.dropdown.active .clickable-building {
+    display: block;
 }
 
 .link-box {
@@ -242,9 +256,15 @@ button {
 }
 
 @media only screen and (max-width: 768px) {
-    /* Main div adjustments */
+    /* Hide the color scheme toggle and font size buttons on mobile */
+    #color-scheme-toggle,
+    .font-size-controls {
+        display: none;
+    }
+    
+    /* Main div adjustments - initially hidden on mobile */
     #main-div {
-        display: block;
+        display: none; /* Changed from block to none */
         top: 20px; 
         left: 70%;
         transform: translateX(-50%); 
@@ -253,11 +273,19 @@ button {
         border-radius: 15px; 
         border: 3px solid rgba(253, 181, 21, 0.8); 
         transition: opacity 0.3s ease, visibility 0.3s ease;
-        opacity: 1;
-        visibility: visible;
     }
-
     
+    /* Make toggle button more prominent on mobile */
+    #toggle-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1001;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    /* Other mobile styles remain unchanged */
     #icon {
         width: 40px; 
         height: 40px;
@@ -318,13 +346,110 @@ button {
     .autocomplete-items {
         max-height: 150px; 
     }
+
+    /* Make h1 smaller on mobile to avoid crowding */
+    h1 {
+        font-size: 32px;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+
+    /* Make the routing container smaller on mobile */
+    .leaflet-routing-container {
+        max-height: 150px !important;
+        width: 260px !important;
+        overflow: hidden;
+    }
+    
+    /* Hide the default instructions table on mobile */
+    .leaflet-routing-container .leaflet-routing-alternatives-container {
+        display: none !important;
+    }
+    
+    /* Show our custom mobile instructions container */
+    .mobile-routing-instructions {
+        display: flex !important;
+    }
+    
+    /* Position the toggle search button for mobile */
+    .toggle-search-btn {
+        bottom: 160px;  /* Adjust based on smaller routing container */
+    }
+    
+    /* Position the search container for mobile */
+    #routing-search-container {
+        bottom: 160px;  /* Adjust based on smaller routing container */
+    }
+}
+
+/* Mobile step-by-step instructions styles (hidden by default on desktop) */
+.mobile-routing-instructions {
+    display: none;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 4px;
+    margin: 0;
+    padding: 10px;
+    height: 120px;
+    position: relative;
+}
+
+.mobile-instruction-step {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.mobile-instruction-icon {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.mobile-instruction-text {
+    flex-grow: 1;
+}
+
+.mobile-instruction-distance {
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.mobile-instruction-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.mobile-nav-btn {
+    background-color: #FDB515;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-step-counter {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
 }
 
 /* routing search box */
 #routing-search-container {
     position: absolute;
-    bottom: 200px;
-    left: 340px; /* just to the right of the routing control box */
+    bottom: 380px; /* Position above the routing control box */
+    left: 10px; /* Aligned with left edge of the routing control */
     z-index: 1000;
     background: white;
     padding: 10px;
@@ -369,9 +494,10 @@ button {
     padding-right: 5px !important;
 }
 
+/* Light teal mode gradient with more contrast */
 body.light-teal-mode {
-    background-color: #007176; /* Teal color */
-    color: #333; /* Dark grey text */
+    background: linear-gradient(135deg, #005F63 0%, #12D8E3 100%);
+    color: #333;
 }
 
 body.light-teal-mode h1,
@@ -525,4 +651,217 @@ body.font-size-large #search-input,
 body.font-size-large button {
     font-size: 20px;
 
+}
+
+/* Simplified Welcome Screen Styles */
+#welcome-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.welcome-content {
+    background-color: white;
+    border-radius: 20px;
+    border: 5px solid #FDB515;
+    padding: 30px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-logo {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 15px;
+}
+
+#welcome-screen h2 {
+    color: #000;
+    font-size: 32px;
+    margin-bottom: 20px;
+    font-family: 'red-hat-display', sans-serif;
+}
+
+#welcome-close-btn {
+    padding: 12px 30px;
+    font-size: 18px;
+    margin-top: 15px;
+}
+
+/* The rest of the styles can remain for light teal mode and mobile compatibility */
+
+/* Updated location button styling */
+.routing-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.location-btn {
+    background-color: #FDB515;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.location-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Remove the old styling that's no longer needed */
+.location-input-group {
+    display: none;
+}
+
+/* Styling for the toggle search button */
+.toggle-search-btn {
+    position: absolute;
+    bottom: 380px;
+    left: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+    border: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-search-btn img {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+
+.toggle-search-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.toggle-search-btn.hidden {
+    display: none;
+}
+
+/* Style for clickable buildings in the dropdown */
+.clickable-building {
+    cursor: pointer;
+    padding: 6px 2px;
+    transition: background-color 0.2s;
+}
+
+.clickable-building:hover {
+    background-color: rgba(253, 181, 21, 0.2);
+    border-radius: 4px;
+}
+
+/* Make the building list dropdown scrollable with more items */
+#building-list {
+    max-height: 180px; /* Slightly shorter to accommodate buttons */
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    scrollbar-width: thick;
+    scrollbar-color: #FDB515 #f0f0f0;
+    margin: 5px 0; /* Add margin above and below */
+}
+
+/* Style the arrow-only buttons */
+.scroll-btn {
+    display: none; /* Hide by default */
+    background-color: #FDB515;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    padding: 0px;
+    cursor: pointer;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    transition: background-color 0.2s;
+    margin: 1px 0;
+    text-align: center;
+}
+
+.scroll-btn:hover {
+    background-color: #E29200;
+}
+
+/* Show scroll buttons only when dropdown is active */
+.dropdown.active .scroll-btn {
+    display: block; /* Show when dropdown is active */
+}
+
+/* Hide the dropdown title text when active */
+.dropdown.active button {
+    display: block;
+    margin: 0;
+}
+
+/* Travel mode selector styling */
+.travel-mode-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px auto;
+    max-width: 400px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 10px;
+    border: 3px solid rgba(253, 181, 21, 0.8);
+}
+
+.travel-mode-container p {
+    margin: 0 0 5px 0;
+    font-weight: bold;
+}
+
+.travel-mode-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.mode-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 2px solid #FDB515;
+    border-radius: 8px;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mode-btn img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.mode-btn:hover {
+    background-color: rgba(253, 181, 21, 0.2);
+}
+
+.mode-btn.active {
+    background-color: #FDB515;
+    color: black;
+    font-weight: bold;
 }
