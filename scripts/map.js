@@ -1196,12 +1196,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const userLng = parseFloat(startInput.dataset.lng);
 
             if (shorthandInputs[endLocation].type == "buildings") {
-                endBuilding = shorthandInputs[endLocation].name;
+                var destBuilding = shorthandInputs[endLocation].name;
                 // Update the route
                 routeCtrl.setWaypoints([
                     L.latLng(userLat, userLng),
-                    L.latLng(buildings[endBuilding].coordinates)
-                ]);
+                    L.latLng(buildings[destBuilding].coordinates)
+                ])
             } else if (shorthandInputs[endLocation].type == "parking"){
                 var parkingId = nameToId[shorthandInputs[endLocation].name];
                 routeCtrl.setWaypoints([
