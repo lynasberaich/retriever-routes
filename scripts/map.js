@@ -89,7 +89,7 @@ function addClickableBuildings() {
                     <button class="set-destination-btn" data-lat="${buildings[key].coordinates[0]}" data-lng="${buildings[key].coordinates[1]}">Set as Destination</button>
                 </div>
             `;
-            
+        
             
             // Bind popup to polygon
             polygon.bindPopup(popupContent, {
@@ -159,7 +159,7 @@ document.getElementById('search-place').addEventListener('submit', function(even
                         <button class="set-destination-btn" data-lat="${buildings[locationName].coordinates[0]}" data-lng="${buildings[locationName].coordinates[1]}">Set as Destination</button>
                     </div>
                 `;
-            }
+            
 
             // Create and open the popup on the map
             map.once('moveend', () => {
@@ -186,6 +186,7 @@ document.getElementById('search-place').addEventListener('submit', function(even
                         });
                     }
             });
+        }
 
         } else if (locationType == "resources"){
             var resourceId = nameToId[locationName];
@@ -1217,7 +1218,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         
         // Continue with the other conditions
-        if ((shorthandInputs[startLocation].type == "buildings") && (shorthandInputs[endLocation].type == "buildings")) {
+        else if ((shorthandInputs[startLocation].type == "buildings") && (shorthandInputs[endLocation].type == "buildings")) {
             // Update routing control waypoints
             routeCtrl.setWaypoints([
                 L.latLng(buildings[shorthandInputs[startLocation].name].coordinates),

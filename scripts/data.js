@@ -354,12 +354,12 @@ export const buildings = {
         nearest_lot: ["PL14"]
     },
     "Facilities Management Building": {
-        coordinates: [39.25197520862123, -76.70744658390562],
+        coordinates: [39.252694810222124, -76.7044304178826],
         resources: [],
         food: [],
         nearest_lot: ["PL26"]
     },
-    "Chesapeake Arena": {
+    "Chesapeake Employers Insurance Arena": {
         coordinates: [39.25203973575942, -76.70741319575494],
         resources: [],
         food: [],
@@ -934,7 +934,7 @@ export const parking = {
         hours: 'Always enforced'
     },
     "ACBL23": { // arena entrance
-        name: "Chesepeake Arena Accessible Parking",
+        name: "Chesapeake Arena Accessible Parking",
         coordinates: [39.25231424670389, -76.7088084854659],
         permit: ["♿"],
         hours: 'Always enforced'
@@ -1073,7 +1073,7 @@ export const resources = {
         name: "Facilities Management Office",
         buildingID: "RL23",
         resourceType: "",
-        coordinates: [39.25667980779895, -76.7092930617115],
+        coordinates: [39.252694810222124, -76.7044304178826],
         info:{
             name: "Facilities Management Office",
             hours: "Monday-Friday: 8am-5pm<br>Saturday-Sunday: Closed",
@@ -1165,7 +1165,7 @@ export const buildingIdToNames = {
     "AC02": "Physics Building",
     "EX08": "Warehouse",
     "EX09": "Facilities Management Building",
-    "AT01": "Chesapeake Arena",
+    "AT01": "Chesapeake Employers Insurance Arena",
     "AC03": "Interdisciplinary Life Sciences Building",
     "SR04": "The Commons",
     "AC04": "Lecture Hall 1",
@@ -1387,9 +1387,9 @@ export const shorthandInputs = {
         type: "buildings",
         name: "Facilities Management Building"
     },
-    "chesapeake arena": {
+    "chesapeake employers insurance arena": {
         type: "buildings",
-        name: "Chesapeake Arena"
+        name: "Chesapeake Employers Insurance Arena"
     },
     "interdisciplinary life sciences building": {
         type: "buildings",
@@ -1699,9 +1699,9 @@ export const shorthandInputs = {
         type: "parking",
         name: "Commons Garage Accessible Parking"
     },
-    "chesepeake arena accessible parking": {
+    "chesapeake arena accessible parking": {
         type: "parking",
-        name: "Chesepeake Arena Accessible Parking"
+        name: "Chesapeake Arena Accessible Parking"
     },
     "lot 28 accessible parking": {
         type: "parking",
@@ -1860,7 +1860,7 @@ export const nameToId = {
     "Lot 2 Accessible Parking": "ACBL20",
     "Lot 1 Accessible Parking": "ACBL21",
     "Commons Garage Accessible Parking": "ACBL22",
-    "Chesepeake Arena Accessible Parking": "ACBL23",
+    "Chesapeake Arena Accessible Parking": "ACBL23",
     "Lot 28 Accessible Parking": "ACBL24",
     "Stadium Lot Accessible Parking": "ACBL25",
     "Warehouse Accessible Parking": "ACBL26",
