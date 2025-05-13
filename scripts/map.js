@@ -1,4 +1,4 @@
-import { buildings, food, parking, resources, shorthandInputs, buildingNames, permit_names } from './data.js';
+import { buildings, food, parking, resources, shorthandInputs, buildingIdToNames, permit_names, nameToId } from './data.js';
 import { umbc_polygons } from './polygons.js';
 
 // Define the geographical bounds for UMBC's campus - slightly expanded
@@ -91,6 +91,8 @@ function addClickableBuildings() {
                     <ul>
                         ${buildings[key].info.facilities.map(facility => `<li>${facility}</li>`).join('')}
                     </ul>
+                    <button class="set-start-btn" data-lat="${buildings[key].coordinates[0]}" data-lng="${buildings[key].coordinates[1]}">Set as Start Location</button><br>
+                    <button class="set-destination-btn" data-lat="${buildings[key].coordinates[0]}" data-lng="${buildings[key].coordinates[1]}">Set as Destination</button>
                 </div>
             `;
             
@@ -99,6 +101,30 @@ function addClickableBuildings() {
             polygon.bindPopup(popupContent, {
                 maxWidth: 300,
                 className: 'building-info-popup'
+            });
+
+            // Handle popup button clicks
+            polygon.on('popupopen', function () {
+                const startBtn = document.querySelector('.set-start-btn');
+                const destinationBtn = document.querySelector('.set-destination-btn');
+
+                if (startBtn) {
+                    startBtn.addEventListener('click', function () {
+
+                        document.getElementById('route-start').value = buildings[key].info.name;
+
+                        polygon.closePopup();
+                    });
+                }
+
+                if (destinationBtn) {
+                    destinationBtn.addEventListener('click', function () {
+
+                        document.getElementById('route-end').value = buildings[key].info.name;
+
+                        polygon.closePopup();
+                    });
+                }
             });
         }
     }
@@ -117,22 +143,209 @@ document.getElementById('search-place').addEventListener('submit', function(even
     console.log(searchQuery);
         
     if (shorthandInputs[searchQuery]) {
-        buildingName = shorthandInputs[searchQuery];
-        map.flyTo(buildings[buildingName].coordinates, 19); // Zoom in and move to location
+        var locationType = shorthandInputs[searchQuery].type;
+        var locationName = shorthandInputs[searchQuery].name;
+        
+        if (locationType == "buildings"){
+            map.flyTo(buildings[locationName].coordinates, 19); // Zoom in and move to location
+            
+            var popupContent = ``
+            // Create popup content with HTML formatting
+            if (buildings[locationName].info){
+                popupContent = `
+                    <div class="building-popup">
+                        <h3>${buildings[locationName].info.name}</h3>
+                        <p>${buildings[locationName].info.description}</p>
+                        <p><strong>Hours:</strong><br>${buildings[locationName].info.hours}</p>
+                        <p><strong>Facilities:</strong></p>
+                        <ul>
+                            ${buildings[locationName].info.facilities.map(facility => `<li>${facility}</li>`).join('')}
+                        </ul>
+                        <button class="set-start-btn" data-lat="${buildings[locationName].coordinates[0]}" data-lng="${buildings[locationName].coordinates[1]}">Set as Start Location</button><br>
+                        <button class="set-destination-btn" data-lat="${buildings[locationName].coordinates[0]}" data-lng="${buildings[locationName].coordinates[1]}">Set as Destination</button>
+                    </div>
+                `;
+            }
 
-        // Create popup content with HTML formatting
-        if ("info" in buildings[buildingName]){
-            const popupContent = `
+            // Create and open the popup on the map
+            map.once('moveend', () => {
+                L.popup({ maxWidth: 300 })
+                    .setLatLng(buildings[locationName].coordinates)
+                    .setContent(popupContent)
+                    .openOn(map)
+            });
+
+            map.once('popupopen', function () {
+                    const startBtn = document.querySelector('.set-start-btn');
+                    const destinationBtn = document.querySelector('.set-destination-btn');
+
+                    if (startBtn) {
+                        startBtn.addEventListener('click', function () {
+                            document.getElementById('route-start').value = buildings[locationName].info.name;
+                            map.closePopup();
+                        });
+                    }
+                    if (destinationBtn) {
+                        destinationBtn.addEventListener('click', function () {
+                            document.getElementById('route-end').value = buildings[locationName].info.name;
+                            map.closePopup();
+                        });
+                    }
+            });
+
+        } else if (locationType == "resources"){
+            var resourceId = nameToId[locationName];
+            var buildingName = buildingIdToNames[resources[resourceId].buildingID];
+
+            map.flyTo(resources[resourceId].coordinates, 19); // Zoom in and move to location
+
+            // Create popup content with HTML formatting
+            var popupContent = `
                 <div class="building-popup">
-                    <h3>${buildings[buildingName].info.name}</h3>
-                    <p>${buildings[buildingName].info.description}</p>
-                    <p><strong>Hours:</strong><br>${buildings[buildingName].info.hours}</p>
-                    <p><strong>Facilities:</strong></p>
-                    <ul>
-                        ${buildings[buildingName].info.facilities.map(facility => `<li>${facility}</li>`).join('')}
-                    </ul>
+                    <h3>${resources[resourceId].info.name}</h3>
+                    <p>${resources[resourceId].info.description}</p>
+                    <p><strong>Hours:</strong><br>${resources[resourceId].info.hours}</p>
+                    <p><strong>Contact:</strong><br>${resources[resourceId].info.number}</p>
+                    <button class="set-start-btn" data-lat="${buildings[buildingName].coordinates[0]}" data-lng="${buildings[buildingName].coordinates[1]}">Set as Start Location</button><br>
+                    <button class="set-destination-btn" data-lat="${buildings[buildingName].coordinates[0]}" data-lng="${buildings[buildingName].coordinates[1]}">Set as Destination</button>
                 </div>
             `;
+
+            // Create and open the popup on the map
+            map.once('moveend', () => {
+                L.popup({ maxWidth: 300 })
+                    .setLatLng(resources[resourceId].coordinates)
+                    .setContent(popupContent)
+                    .openOn(map);
+            });
+
+            map.once('popupopen', function () {
+                    const startBtn = document.querySelector('.set-start-btn');
+                    const destinationBtn = document.querySelector('.set-destination-btn');
+
+                    if (startBtn) {
+                        startBtn.addEventListener('click', function () {
+                            document.getElementById('route-start').value = buildings[buildingName].info.name;
+                            map.closePopup();
+                        });
+                    }
+                    if (destinationBtn) {
+                        destinationBtn.addEventListener('click', function () {
+                            document.getElementById('route-end').value = buildings[buildingName].info.name;
+                            map.closePopup();
+                        });
+                    }
+            });
+
+        } else if (locationType == "food"){
+            var foodId = nameToId[locationName];
+            var buildingName = buildingIdToNames[food[foodId].buildingID];
+            map.flyTo(buildings[buildingName].coordinates, 19); // Zoom in and move to location
+
+            var popupContent = ``;
+            // Create popup content with HTML formatting
+            if (buildings[buildingName].info){
+                popupContent = `
+                    <div class="building-popup">
+                        <h3>${buildings[buildingName].info.name}</h3>
+                        <p>${buildings[buildingName].info.description}</p>
+                        <p><strong>Hours:</strong><br>${buildings[buildingName].info.hours}</p>
+                        <p><strong>Facilities:</strong></p>
+                        <ul>
+                            ${buildings[buildingName].info.facilities.map(facility => `<li>${facility}</li>`).join('')}
+                        </ul>
+                        <button class="set-start-btn" data-lat="${buildings[buildingName].coordinates[0]}" data-lng="${buildings[buildingName].coordinates[1]}">Set as Start Location</button><br>
+                        <button class="set-destination-btn" data-lat="${buildings[buildingName].coordinates[0]}" data-lng="${buildings[buildingName].coordinates[1]}">Set as Destination</button>
+                    </div>
+                `;
+            }
+
+            // Create and open the popup on the map
+            map.once('moveend', () => {
+                L.popup({ maxWidth: 300 })
+                    .setLatLng(buildings[buildingName].coordinates)
+                    .setContent(popupContent)
+                    .openOn(map);
+            });
+
+            map.once('popupopen', function () {
+                    const startBtn = document.querySelector('.set-start-btn');
+                    const destinationBtn = document.querySelector('.set-destination-btn');
+
+                    if (startBtn) {
+                        startBtn.addEventListener('click', function () {
+                            document.getElementById('route-start').value = buildings[buildingName].info.name;
+                            map.closePopup();
+                        });
+                    }
+                    if (destinationBtn) {
+                        destinationBtn.addEventListener('click', function () {
+                            document.getElementById('route-end').value = buildings[buildingName].info.name;
+                            map.closePopup();
+                        });
+                    }
+            });
+
+        } else if (locationType == "parking"){
+            var parkingId = nameToId[locationName];
+            map.flyTo(parking[parkingId].coordinates, 19); // Zoom in and move to location
+            // Create popup content with HTML formatting
+
+            const all_permit_names = [];
+            for (let i = 0; i < parking[parkingId].permit.length; i++) {
+                all_permit_names.push(permit_names[parking[parkingId].permit[i]]);
+            }
+            
+            all_permit_names.join(", ");
+
+            var popupContent = `
+                <div class="building-popup">
+                    <h3>${parking[parkingId].name}</h3>
+                    <p><strong>Permits permitted:</strong><br>${all_permit_names}</p>
+                    <p><strong>Hours enforced:</strong><br>${parking[parkingId].hours}</p>
+                    <button class="set-start-btn" data-lat="${parking[parkingId].coordinates[0]}" data-lng="${parking[parkingId].coordinates[1]}">Set as Start Location</button><br>
+                        <button class="set-destination-btn" data-lat="${parking[parkingId].coordinates[0]}" data-lng="${parking[parkingId].coordinates[1]}">Set as Destination</button>
+                </div>
+            `;
+
+            // Create and open the popup on the map
+            map.once('moveend', () => {
+                L.popup({ maxWidth: 300 })
+                    .setLatLng(parking[parkingId].coordinates)
+                    .setContent(popupContent)
+                    .openOn(map);
+            });
+
+            map.once('popupopen', function () {
+                    const startBtn = document.querySelector('.set-start-btn');
+                    const destinationBtn = document.querySelector('.set-destination-btn');
+
+                    if (destinationBtn) {
+                        destinationBtn.addEventListener('click', function () {
+                            const lat = parseFloat(this.getAttribute('data-lat'));
+                            const lng = parseFloat(this.getAttribute('data-lng'));
+                
+                            document.getElementById('route-end').value = parking[parkingId].name;
+                
+                            selectedParkEnd = parking[parkingId];
+                            sel_destination_flag = 1;
+                            map.closePopup();
+                        });
+                    }
+                
+                    if (startBtn) {
+                        startBtn.addEventListener('click', function () {
+                            const lat = parseFloat(this.getAttribute('data-lat'));
+                            const lng = parseFloat(this.getAttribute('data-lng'));
+                
+                            document.getElementById('route-start').value = parking[parkingId].name;
+                            selectedParkStart = parking[parkingId];
+                            sel_start_flag = 1;
+                
+                            map.closePopup();
+                        });
+                    }   
+            });                    
         }
     } else {
         alert("Location not found!");
@@ -168,12 +381,216 @@ document.addEventListener('DOMContentLoaded', function() {
         matches.slice(0, 5).forEach(match => {
             console.log(match);
             const item = document.createElement('div');
-            item.innerHTML = shorthandInputs[match];
+            item.innerHTML = shorthandInputs[match].name;
             item.addEventListener('click', function() {
                 searchInput.value = match;
                 autocompleteContainer.innerHTML = '';
                 // Move map to selected location
-                map.flyTo(buildings[shorthandInputs[match]].coordinates, 19);
+
+                var locationType = shorthandInputs[match].type;
+                var locationName = shorthandInputs[match].name;
+
+                if (locationType == "buildings"){
+                    map.flyTo(buildings[locationName].coordinates, 19); // Zoom in and move to location
+                    
+                    var popupContent = ``
+                    // Create popup content with HTML formatting
+                    if (buildings[locationName].info){
+                        popupContent = `
+                            <div class="building-popup">
+                                <h3>${buildings[locationName].info.name}</h3>
+                                <p>${buildings[locationName].info.description}</p>
+                                <p><strong>Hours:</strong><br>${buildings[locationName].info.hours}</p>
+                                <p><strong>Facilities:</strong></p>
+                                <ul>
+                                    ${buildings[locationName].info.facilities.map(facility => `<li>${facility}</li>`).join('')}
+                                </ul>
+                                <button class="set-start-btn" data-lat="${buildings[locationName].coordinates[0]}" data-lng="${buildings[locationName].coordinates[1]}">Set as Start Location</button><br>
+                                <button class="set-destination-btn" data-lat="${buildings[locationName].coordinates[0]}" data-lng="${buildings[locationName].coordinates[1]}">Set as Destination</button>
+                            </div>
+                        `;
+                    }
+
+                    // Create and open the popup on the map
+                    map.once('moveend', () => {
+                        L.popup({ maxWidth: 300 })
+                            .setLatLng(buildings[locationName].coordinates)
+                            .setContent(popupContent)
+                            .openOn(map)
+                    });
+
+                    map.once('popupopen', function () {
+                            const startBtn = document.querySelector('.set-start-btn');
+                            const destinationBtn = document.querySelector('.set-destination-btn');
+
+                            if (startBtn) {
+                                startBtn.addEventListener('click', function () {
+                                    document.getElementById('route-start').value = buildings[locationName].info.name;
+                                    map.closePopup();
+                                });
+                            }
+                            if (destinationBtn) {
+                                destinationBtn.addEventListener('click', function () {
+                                    document.getElementById('route-end').value = buildings[locationName].info.name;
+                                    map.closePopup();
+                                });
+                            }
+                    });
+
+                } else if (locationType == "resources"){
+                    var resourceId = nameToId[locationName];
+                    var buildingName = buildingIdToNames[resources[resourceId].buildingID];
+
+                    map.flyTo(resources[resourceId].coordinates, 19); // Zoom in and move to location
+
+                    // Create popup content with HTML formatting
+                    var popupContent = `
+                        <div class="building-popup">
+                            <h3>${resources[resourceId].info.name}</h3>
+                            <p>${resources[resourceId].info.description}</p>
+                            <p><strong>Hours:</strong><br>${resources[resourceId].info.hours}</p>
+                            <p><strong>Contact:</strong><br>${resources[resourceId].info.number}</p>
+                            <button class="set-start-btn" data-lat="${buildings[buildingName].coordinates[0]}" data-lng="${buildings[buildingName].coordinates[1]}">Set as Start Location</button><br>
+                            <button class="set-destination-btn" data-lat="${buildings[buildingName].coordinates[0]}" data-lng="${buildings[buildingName].coordinates[1]}">Set as Destination</button>
+                        </div>
+                    `;
+
+                    // Create and open the popup on the map
+                    map.once('moveend', () => {
+                        L.popup({ maxWidth: 300 })
+                            .setLatLng(resources[resourceId].coordinates)
+                            .setContent(popupContent)
+                            .openOn(map);
+                    });
+
+                    map.once('popupopen', function () {
+                            const startBtn = document.querySelector('.set-start-btn');
+                            const destinationBtn = document.querySelector('.set-destination-btn');
+
+                            if (startBtn) {
+                                startBtn.addEventListener('click', function () {
+                                    document.getElementById('route-start').value = buildings[buildingName].info.name;
+                                    map.closePopup();
+                                });
+                            }
+                            if (destinationBtn) {
+                                destinationBtn.addEventListener('click', function () {
+                                    document.getElementById('route-end').value = buildings[buildingName].info.name;
+                                    map.closePopup();
+                                });
+                            }
+                    });
+
+                } else if (locationType == "food"){
+                    var foodId = nameToId[locationName];
+                    var buildingName = buildingIdToNames[food[foodId].buildingID];
+                    map.flyTo(buildings[buildingName].coordinates, 19); // Zoom in and move to location
+
+                    var popupContent = ``;
+                    // Create popup content with HTML formatting
+                    if (buildings[buildingName].info){
+                        popupContent = `
+                            <div class="building-popup">
+                                <h3>${buildings[buildingName].info.name}</h3>
+                                <p>${buildings[buildingName].info.description}</p>
+                                <p><strong>Hours:</strong><br>${buildings[buildingName].info.hours}</p>
+                                <p><strong>Facilities:</strong></p>
+                                <ul>
+                                    ${buildings[buildingName].info.facilities.map(facility => `<li>${facility}</li>`).join('')}
+                                </ul>
+                                <button class="set-start-btn" data-lat="${buildings[buildingName].coordinates[0]}" data-lng="${buildings[buildingName].coordinates[1]}">Set as Start Location</button><br>
+                                <button class="set-destination-btn" data-lat="${buildings[buildingName].coordinates[0]}" data-lng="${buildings[buildingName].coordinates[1]}">Set as Destination</button>
+                            </div>
+                        `;
+                    }
+
+                    // Create and open the popup on the map
+                    map.once('moveend', () => {
+                        L.popup({ maxWidth: 300 })
+                            .setLatLng(buildings[buildingName].coordinates)
+                            .setContent(popupContent)
+                            .openOn(map);
+                    });
+
+                    map.once('popupopen', function () {
+                            const startBtn = document.querySelector('.set-start-btn');
+                            const destinationBtn = document.querySelector('.set-destination-btn');
+
+                            if (startBtn) {
+                                startBtn.addEventListener('click', function () {
+                                    document.getElementById('route-start').value = buildings[buildingName].info.name;
+                                    map.closePopup();
+                                });
+                            }
+                            if (destinationBtn) {
+                                destinationBtn.addEventListener('click', function () {
+                                    document.getElementById('route-end').value = buildings[buildingName].info.name;
+                                    map.closePopup();
+                                });
+                            }
+                    });
+
+                } else if (locationType == "parking"){
+                    var parkingId = nameToId[locationName];
+                    map.flyTo(parking[parkingId].coordinates, 19); // Zoom in and move to location
+                    // Create popup content with HTML formatting
+
+                    const all_permit_names = [];
+                    for (let i = 0; i < parking[parkingId].permit.length; i++) {
+                        all_permit_names.push(permit_names[parking[parkingId].permit[i]]);
+                    }
+                    
+                    all_permit_names.join(", ");
+
+                    var popupContent = `
+                        <div class="building-popup">
+                            <h3>${parking[parkingId].name}</h3>
+                            <p><strong>Permits permitted:</strong><br>${all_permit_names}</p>
+                            <p><strong>Hours enforced:</strong><br>${parking[parkingId].hours}</p>
+                            <button class="set-start-btn" data-lat="${parking[parkingId].coordinates[0]}" data-lng="${parking[parkingId].coordinates[1]}">Set as Start Location</button><br>
+                                <button class="set-destination-btn" data-lat="${parking[parkingId].coordinates[0]}" data-lng="${parking[parkingId].coordinates[1]}">Set as Destination</button>
+                        </div>
+                    `;
+
+                    // Create and open the popup on the map
+                    map.once('moveend', () => {
+                        L.popup({ maxWidth: 300 })
+                            .setLatLng(parking[parkingId].coordinates)
+                            .setContent(popupContent)
+                            .openOn(map);
+                    });
+
+                    map.once('popupopen', function () {
+                            const startBtn = document.querySelector('.set-start-btn');
+                            const destinationBtn = document.querySelector('.set-destination-btn');
+
+                            if (destinationBtn) {
+                                destinationBtn.addEventListener('click', function () {
+                                    const lat = parseFloat(this.getAttribute('data-lat'));
+                                    const lng = parseFloat(this.getAttribute('data-lng'));
+                        
+                                    document.getElementById('route-end').value = parking[parkingId].name;
+                        
+                                    selectedParkEnd = parking[parkingId];
+                                    sel_destination_flag = 1;
+                                    map.closePopup();
+                                });
+                            }
+                        
+                            if (startBtn) {
+                                startBtn.addEventListener('click', function () {
+                                    const lat = parseFloat(this.getAttribute('data-lat'));
+                                    const lng = parseFloat(this.getAttribute('data-lng'));
+                        
+                                    document.getElementById('route-start').value = parking[parkingId].name;
+                                    selectedParkStart = parking[parkingId];
+                                    sel_start_flag = 1;
+                        
+                                    map.closePopup();
+                                });
+                            }   
+                    });                    
+                }
             });
             autocompleteContainer.appendChild(item);
         });
@@ -771,9 +1188,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show top 5 matches
             matches.slice(0, 5).forEach(match => {
                 const item = document.createElement('div');
-                item.innerHTML = shorthandInputs[match];
+                item.innerHTML = shorthandInputs[match].name;
                 item.addEventListener('click', function() {
-                    input.value = shorthandInputs[match];
+                    input.value = shorthandInputs[match].name;
                     autocompleteContainer.innerHTML = '';
                 });
                 autocompleteContainer.appendChild(item);
@@ -798,7 +1215,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const userLng = parseFloat(startInput.dataset.lng);
             
             if (endLocation in shorthandInputs) {
-                const endBuilding = shorthandInputs[endLocation];
+                const endBuilding = shorthandInputs[endLocation].name;
                 
                 // Update the route
                 routeCtrl.setWaypoints([
@@ -815,11 +1232,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Continue with the other conditions
-        if (shorthandInputs[startLocation] && shorthandInputs[endLocation]) {
+        if ((shorthandInputs[startLocation].type == "buildings") && (shorthandInputs[endLocation].type == "buildings")) {
             // Update routing control waypoints
             routeCtrl.setWaypoints([
-                L.latLng(buildings[shorthandInputs[startLocation]].coordinates),
-                L.latLng(buildings[shorthandInputs[endLocation]].coordinates)
+                L.latLng(buildings[shorthandInputs[startLocation].name].coordinates),
+                L.latLng(buildings[shorthandInputs[endLocation].name].coordinates)
             ]);
             
             // Hide the search container and show the toggle button
@@ -829,7 +1246,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (sel_destination_flag && !sel_start_flag) {
             // Handle existing logic
             routeCtrl.setWaypoints([
-                L.latLng(buildings[shorthandInputs[startLocation]].coordinates),
+                L.latLng(buildings[shorthandInputs[startLocation].name].coordinates),
                 L.latLng(selectedParkEnd.coordinates)
             ]);
             sel_destination_flag = 0;
@@ -838,8 +1255,32 @@ document.addEventListener('DOMContentLoaded', function() {
             // Hide the search container and show the toggle button
             document.getElementById('routing-search-container').classList.add('hidden');
             document.getElementById('toggle-search-btn').classList.remove('hidden');
+        }  else if (!sel_destination_flag && sel_start_flag) {
+            // Handle existing logic
+            routeCtrl.setWaypoints([
+                L.latLng(selectedParkStart.coordinates),
+                L.latLng(buildings[shorthandInputs[endLocation].name].coordinates)
+            ]);
+            sel_destination_flag = 0;
+            document.getElementById('route-start').value = "";
+            
+            // Hide the search container and show the toggle button
+            document.getElementById('routing-search-container').classList.add('hidden');
+            document.getElementById('toggle-search-btn').classList.remove('hidden');
+        }  else if (sel_destination_flag && sel_start_flag) {
+            // Handle existing logic
+            routeCtrl.setWaypoints([
+                L.latLng(selectedParkStart.coordinates),
+                L.latLng(selectedParkEnd.coordinates)
+            ]);
+            sel_destination_flag = 0;
+            document.getElementById('route-end').value = "";
+            document.getElementById('route-start').value = "";
+            
+            // Hide the search container and show the toggle button
+            document.getElementById('routing-search-container').classList.add('hidden');
+            document.getElementById('toggle-search-btn').classList.remove('hidden');
         }
-        // Handle other conditions...
         else {
             alert("Invalid waypoint(s)");
         }
@@ -1015,7 +1456,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // If there's an end location set, update the route
                     if (endInput.value in shorthandInputs) {
-                        const endBuilding = shorthandInputs[endInput.value.toLowerCase()];
+                        const endBuilding = shorthandInputs[endInput.value.toLowerCase()].name;
                         
                         routeCtrl.setWaypoints([
                             L.latLng(closestPoint.lat, closestPoint.lng),
@@ -1093,7 +1534,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const userLng = parseFloat(startInput.dataset.lng);
             
             if (endLocation in shorthandInputs) {
-                const endBuilding = shorthandInputs[endLocation];
+                const endBuilding = shorthandInputs[endLocation].name;
                 
                 // Update the route
                 routeCtrl.setWaypoints([
