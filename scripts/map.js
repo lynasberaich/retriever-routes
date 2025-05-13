@@ -17,12 +17,6 @@ var map = L.map('map', {
     bounceAtZoomLimits: true // Bounce effect when trying to zoom beyond limits
 }).setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
 
-var selectedParkStart = "";
-var selectedParkEnd = "";
-
-var sel_destination_flag = 0;
-var sel_start_flag = 0;
-
 let activeMarkers = [];
 
 // Add this near the beginning of your document ready function
@@ -145,7 +139,7 @@ document.getElementById('search-place').addEventListener('submit', function(even
     if (shorthandInputs[searchQuery]) {
         var locationType = shorthandInputs[searchQuery].type;
         var locationName = shorthandInputs[searchQuery].name;
-        
+
         if (locationType == "buildings"){
             map.flyTo(buildings[locationName].coordinates, 19); // Zoom in and move to location
             
@@ -327,8 +321,6 @@ document.getElementById('search-place').addEventListener('submit', function(even
                 
                             document.getElementById('route-end').value = parking[parkingId].name;
                 
-                            selectedParkEnd = parking[parkingId];
-                            sel_destination_flag = 1;
                             map.closePopup();
                         });
                     }
@@ -339,8 +331,6 @@ document.getElementById('search-place').addEventListener('submit', function(even
                             const lng = parseFloat(this.getAttribute('data-lng'));
                 
                             document.getElementById('route-start').value = parking[parkingId].name;
-                            selectedParkStart = parking[parkingId];
-                            sel_start_flag = 1;
                 
                             map.closePopup();
                         });
@@ -571,8 +561,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                                     document.getElementById('route-end').value = parking[parkingId].name;
                         
-                                    selectedParkEnd = parking[parkingId];
-                                    sel_destination_flag = 1;
                                     map.closePopup();
                                 });
                             }
@@ -583,8 +571,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     const lng = parseFloat(this.getAttribute('data-lng'));
                         
                                     document.getElementById('route-start').value = parking[parkingId].name;
-                                    selectedParkStart = parking[parkingId];
-                                    sel_start_flag = 1;
                         
                                     map.closePopup();
                                 });
@@ -678,8 +664,6 @@ function updateMarkers() {
                     
                                 document.getElementById('route-end').value = lot.name;
                     
-                                selectedParkEnd = lot;
-                                sel_destination_flag = 1;
                                 marker.closePopup();
                             });
                         }
@@ -690,8 +674,6 @@ function updateMarkers() {
                                 const lng = parseFloat(this.getAttribute('data-lng'));
                     
                                 document.getElementById('route-start').value = lot.name;
-                                selectedParkStart = lot;
-                                sel_start_flag = 1;
                     
                                 marker.closePopup();
                             });
@@ -1213,23 +1195,28 @@ document.addEventListener('DOMContentLoaded', function() {
         if (startLocation === "my location" && startInput.dataset.lat && startInput.dataset.lng) {
             const userLat = parseFloat(startInput.dataset.lat);
             const userLng = parseFloat(startInput.dataset.lng);
-            
-            if (endLocation in shorthandInputs) {
-                const endBuilding = shorthandInputs[endLocation].name;
-                
+
+            if (shorthandInputs[endLocation].type == "buildings") {
+                endBuilding = shorthandInputs[endLocation].name;
                 // Update the route
                 routeCtrl.setWaypoints([
                     L.latLng(userLat, userLng),
                     L.latLng(buildings[endBuilding].coordinates)
                 ]);
-                
+            } else if (shorthandInputs[endLocation].type == "parking"){
+                var parkingId = nameToId[shorthandInputs[endLocation].name];
+                routeCtrl.setWaypoints([
+                    L.latLng(userLat, userLng),
+                    L.latLng(parking[parkingId].coordinates)
+                ]);
+            }
+                                
                 // Hide the search container and show the toggle button
                 document.getElementById('routing-search-container').classList.add('hidden');
                 document.getElementById('toggle-search-btn').classList.remove('hidden');
                 
                 return; // Important: exit early to avoid showing the error alert
             }
-        }
         
         // Continue with the other conditions
         if ((shorthandInputs[startLocation].type == "buildings") && (shorthandInputs[endLocation].type == "buildings")) {
@@ -1242,42 +1229,35 @@ document.addEventListener('DOMContentLoaded', function() {
             // Hide the search container and show the toggle button
             document.getElementById('routing-search-container').classList.add('hidden');
             document.getElementById('toggle-search-btn').classList.remove('hidden');
-        } 
-        else if (sel_destination_flag && !sel_start_flag) {
-            // Handle existing logic
+        } else if ((shorthandInputs[startLocation].type == "buildings") && (shorthandInputs[endLocation].type == "parking")){
+            var endParkId = nameToId[shorthandInputs[endLocation].name];
             routeCtrl.setWaypoints([
                 L.latLng(buildings[shorthandInputs[startLocation].name].coordinates),
-                L.latLng(selectedParkEnd.coordinates)
+                L.latLng(parking[endParkId].coordinates)
             ]);
-            sel_destination_flag = 0;
-            document.getElementById('route-end').value = "";
-            
-            // Hide the search container and show the toggle button
+
+                // Hide the search container and show the toggle button
             document.getElementById('routing-search-container').classList.add('hidden');
             document.getElementById('toggle-search-btn').classList.remove('hidden');
-        }  else if (!sel_destination_flag && sel_start_flag) {
-            // Handle existing logic
+        } else if ((shorthandInputs[startLocation].type == "parking") && (shorthandInputs[endLocation].type == "buildings")){
+            var startParkId = nameToId[shorthandInputs[startLocation].name];
             routeCtrl.setWaypoints([
-                L.latLng(selectedParkStart.coordinates),
-                L.latLng(buildings[shorthandInputs[endLocation].name].coordinates)
+                L.latLng(parking[startParkId].coordinates),   
+                L.latLng(buildings[shorthandInputs[endLocation].name].coordinates)             
             ]);
-            sel_destination_flag = 0;
-            document.getElementById('route-start').value = "";
-            
-            // Hide the search container and show the toggle button
+
+                // Hide the search container and show the toggle button
             document.getElementById('routing-search-container').classList.add('hidden');
             document.getElementById('toggle-search-btn').classList.remove('hidden');
-        }  else if (sel_destination_flag && sel_start_flag) {
-            // Handle existing logic
+        } else if ((shorthandInputs[startLocation].type == "parking") && (shorthandInputs[endLocation].type == "parking")){
+            var startParkId = nameToId[shorthandInputs[startLocation].name];
+            var endParkId = nameToId[shorthandInputs[endLocation].name];
             routeCtrl.setWaypoints([
-                L.latLng(selectedParkStart.coordinates),
-                L.latLng(selectedParkEnd.coordinates)
+                L.latLng(parking[startParkId].coordinates),   
+                L.latLng(parking[endParkId].coordinates)             
             ]);
-            sel_destination_flag = 0;
-            document.getElementById('route-end').value = "";
-            document.getElementById('route-start').value = "";
-            
-            // Hide the search container and show the toggle button
+
+                // Hide the search container and show the toggle button
             document.getElementById('routing-search-container').classList.add('hidden');
             document.getElementById('toggle-search-btn').classList.remove('hidden');
         }
