@@ -591,13 +591,7 @@ export const buildings = {
         coordinates: [39.250573889558346, -76.70749632656262],
         resources: [],
         food: [],
-        nearest_lot: ["PL14", "PL28", "PL27"],
-        info:{
-            name: "Interdisciplinary Life Sciences Building",
-            hours: "",
-            description: "",
-            facilities: []
-        }
+        nearest_lot: ["PL14", "PL28", "PL27"]
     },
     "UMBC Stadium Ticket Booth": {
         coordinates: [39.25050758004129, -76.70860137120687],
