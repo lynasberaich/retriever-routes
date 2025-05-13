@@ -2,7 +2,7 @@
 <html lang="en">  
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Retriever Routes</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="styles/index.css">
@@ -15,6 +15,15 @@
 
     <!-- Toggle Button -->
     <button id="toggle-btn" class="link-box">Toggle View</button>
+    <button id="color-scheme-toggle" class ="link-box" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">Toggle Color Scheme</button>
+    
+    <!-- Font Size Controls -->
+    <div style="position: absolute; top: 70px; right: 10px; z-index: 1000;" class="font-size-controls">
+        <button class="font-size-btn active" data-size="normal">A</button>
+        <button class="font-size-btn" data-size="medium">A+</button>
+        <button class="font-size-btn" data-size="large">A++</button>
+    </div>
+    
     <div id="map">
         <!-- Image overlay -->
         <img id="icon" src="assets/images/icon_no_bg.png" alt="Retriever Routes Icon">
@@ -24,9 +33,20 @@
             <form id="routing-search">
                 <input type="text" id="route-start" placeholder="Start Location"/>
                 <input type="text" id="route-end" placeholder="Destination"/>
-                <button type="submit">Route</button>
+                <div class="routing-buttons">
+                    <button type="button" id="use-my-location" class="location-btn" title="Use my current location">
+                        <img src="assets/images/location.png" alt="Location" class="location-icon">
+                    </button>
+                    <button type="submit">Route</button>
+                </div>
             </form>
         </div>
+
+        <!-- Add this below the routing-search-container -->
+        <button id="toggle-search-btn" class="toggle-search-btn hidden">
+            <img src="assets/images/search.png" alt="Toggle Search">
+            <span>Search Route</span>
+        </button>
 
         <!-- Div overlay -->
         <div id="main-div">
@@ -45,12 +65,9 @@
                 <button type="submit">
                     <img class="down-icon" src="assets/images/chevron.png" alt="down icon">
                 </button>
-                <p> UMBC Campus Building List</p>
-                <div class="dropdown-content">
-                    <p>Library</p>
-                    <p>Engineering Building</p>
-                    <p>Administration</p>
-                    <p>Commons</p>
+                <p>UMBC Campus Building List</p>
+                <div class="dropdown-content" id="building-list">
+                    <!-- Buildings will be populated here via JavaScript -->
                 </div>
             </div>
 
@@ -71,7 +88,7 @@
                 </div>
             </div>
 
-
+            <!--- 
             <div class="item dropdown">
                 <button type="submit">
                     <img class="down-icon" src="assets/images/chevron.png" alt="down icon">
@@ -83,32 +100,50 @@
                     <p>Food</p>
                 </div>
             </div>
+            -->
+            
             
         </div>
 
     </div>
+    
+    <!-- Travel Mode Selector -->
+    <div class="travel-mode-container">
+        <p>Travel Mode:</p>
+        <div class="travel-mode-buttons">
+            <button id="mode-walk" class="mode-btn active">
+                <img src="assets/images/walk.png" alt="Walk">
+                <span>Walk</span>
+            </button>
+            <button id="mode-drive" class="mode-btn">
+                <img src="assets/images/car.png" alt="Drive">
+                <span>Drive</span>
+            </button>
+            <button id="mode-bike" class="mode-btn">
+                <img src="assets/images/bike.png" alt="Bike">
+                <span>Bike</span>
+            </button>
+        </div>
+    </div>
+    
     <div class="link-box">
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfB9mUc9NH2pTSUioCg9aDOrtz8vkHRiDjg9obxUka_UeCJ5w/viewform?usp=header" target="_blank">Give us Feedback!</a>
     </div>
     
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBR3WgEs33HXukw1RS2tMZK7ckyb14cgF4"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/examples/Control.Geocoder.js"></script>
     <script src="scripts/map.js", type="module"></script>
 
-    <script>
-        document.getElementById('toggle-btn').addEventListener('click', function() {
-            
-            var mainDiv = document.getElementById('main-div');
-            
-            
-            if (mainDiv.style.display === 'none') {
-                mainDiv.style.display = 'block'; // Show the main-div
-            } else {
-                mainDiv.style.display = 'none'; 
-            }
-        });
-    </script>
+    <!-- Simplified welcome screen -->
+    <div id="welcome-screen">
+        <div class="welcome-content">
+            <img src="assets/images/icon_no_bg.png" alt="Retriever Routes Logo" class="welcome-logo">
+            <h2>Welcome to Retriever Routes!</h2>
+            <button id="welcome-close-btn" class="link-box">Get Started</button>
+        </div>
+    </div>
 </body>
 </html>

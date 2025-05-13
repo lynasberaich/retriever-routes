@@ -343,8 +343,8 @@ export const buildings = {
         info:{
             name: "Physics Building",
             hours: "",
-            description: "",
-            facilities: []
+            description: "Home to the Physics Department, the building contains one of the largest observatory's on the East Coast",
+            facilities: ["Observatory"]
         }
     },
     "Warehouse": {
@@ -378,9 +378,9 @@ export const buildings = {
         nearest_lot: ["PL15"],
         info:{
             name: "Interdisciplinary Life Sciences Building",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Friday: 9am-5pm",
+            description: "One of UMBC most renovated buildings, ILSB is a top of the line biology facility",
+            facilities: ["Research Labs", "Classrooms", "Testing Facilities" ]
         }
     },
     "The Commons": {
@@ -421,8 +421,8 @@ export const buildings = {
         info:{
             name: "Biological Sciences Building",
             hours: "",
-            description: "",
-            facilities: []
+            description: "Biological Sciences Facilities and Labs",
+            facilities: ["Lecture Halls", "Labs"]
         }
     },
     "Retriever Activities Center": {
@@ -444,9 +444,9 @@ export const buildings = {
         nearest_lot: ["PL15"],
         info:{
             name: "Math & Psychology Building",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Friday: 9am-4pm",
+            description: "UMBC's Math and Pyschology Building is home to a variety of student based offices and classrooms.",
+            facilities: ["Career Center", "Student Disability Services Office", "Facilities Management Building", "Pyschology Case Study Spaces"]
         }
     },
     "Sondheim Building": {
@@ -456,9 +456,9 @@ export const buildings = {
         nearest_lot: ["PL16"],
         info:{
             name: "Sondheim Building",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Friday: 9am-4pm",
+            description: "Educational building funded by the Sondheim Foundation",
+            facilities: ["Classrooms", "Study Spaces"]
         }
     },
     "Meyerhoff Chemistry Building": {
@@ -468,9 +468,9 @@ export const buildings = {
         nearest_lot: ["PL08"],
         info:{
             name: "Meyerhoff Chemistry Building",
-            hours: "",
+            hours: "Monday-Friday: 9am-4pm",
             description: "",
-            facilities: []
+            facilities: ["Biology Labs", "Lecture Halls", "Research Facilities"]
         }
     },
     "University Center": {
@@ -482,7 +482,7 @@ export const buildings = {
             name: "University Center",
             hours: "Monday-Friday: 7am-10pm<br>Saturday-Sunday: Limited access",
             description: "A spacious location in the center of campus features a Starbucks, grab and go eateries, and gathering spaces.",
-            facilities: ["Classrooms", "Offices", "Chick-fil-a", "Starbucks", "Seating areas"]
+            facilities: ["Classrooms", "Offices", "UC ballrom", "Chick-fil-a", "Starbucks", "Seating areas"]
         }
     },
     "Sherman Hall": {
@@ -493,8 +493,8 @@ export const buildings = {
         info:{
             name: "Sherman Hall",
             hours: "",
-            description: "",
-            facilities: []
+            description: "Home to a variety of state of the Art lecture halls and Classrooms: Currently under renovation.",
+            facilities: ["Lecture Halls", "Classrooms", "Meyerhoff Office"]
         }
     },
     "Administration Building": {
@@ -504,9 +504,9 @@ export const buildings = {
         nearest_lot: ["PL16"],
         info:{
             name: "Administration Building",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Friday: 9am-5pm",
+            description: "The Administration Building houses the formal administration offices and Campus financing resources.",
+            facilities: ["Admin Cafe", "President's Office", "Student Business Services"]
         }
     },
     "Information Technology/Engineering Building": {
@@ -516,9 +516,9 @@ export const buildings = {
         nearest_lot: ["PL09"],
         info:{
             name: "Information Technology/Engineering Building",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Friday: 9am-3pm",
+            description: "A top of the line student classroom and lecture hall space including the COEIT Department",
+            facilities: ["COEIT Department Office, Labs, Classrooms"]
         }
     },
     "Engineering Building": {
@@ -540,9 +540,9 @@ export const buildings = {
         nearest_lot: ["PL08", "PL09"],
         info:{
             name: "Fine Arts Building",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Friday: 9am-4pm",
+            description: "Home to the visual arts students and Art displays from performance to gallery.",
+            facilities: ["Recital Hall", "Student Art Gallery", "Printing Labs", "Camera Rental Cage", "Individualized Studies Office", "Academic Success Center"]
         }
     },
     "Performing Arts & Humanities Building": {
@@ -552,9 +552,9 @@ export const buildings = {
         nearest_lot: ["PL08", "PL09"],
         info:{
             name: "Performing Arts & Humanities Building",
-            hours: "",
-            description: "",
-            facilities: []
+            hours: "Monday-Friday: 9am-10pm",
+            description: "Home to the Performing Arts, the PAHB has a variety of performance spaces for music and theatre students.",
+            facilities: ["Proscenium Theatre", "Black Box Theatre", "Concert Hall", "Music Box", "English Department", "Theatre Departmant","Music Office" ]
         }
     },
     "BWTech 5525": {
@@ -1236,4 +1236,3 @@ export const data = {
     "food": food,
     "resources": resources
 };
-
