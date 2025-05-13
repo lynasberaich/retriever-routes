@@ -145,7 +145,7 @@ document.getElementById('search-place').addEventListener('submit', function(even
             
             var popupContent = ``
             // Create popup content with HTML formatting
-            if (buildings[locationName].info){
+            if ("info" in buildings[locationName]){
                 popupContent = `
                     <div class="building-popup">
                         <h3>${buildings[locationName].info.name}</h3>
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     var popupContent = ``
                     // Create popup content with HTML formatting
-                    if (buildings[locationName].info){
+                    if ("info" in buildings[locationName]){
                         popupContent = `
                             <div class="building-popup">
                                 <h3>${buildings[locationName].info.name}</h3>
@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <button class="set-destination-btn" data-lat="${buildings[locationName].coordinates[0]}" data-lng="${buildings[locationName].coordinates[1]}">Set as Destination</button>
                             </div>
                         `;
-                    }
+                    
 
                     // Create and open the popup on the map
                     map.once('moveend', () => {
@@ -427,6 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 });
                             }
                     });
+                }
 
                 } else if (locationType == "resources"){
                     var resourceId = nameToId[locationName];
