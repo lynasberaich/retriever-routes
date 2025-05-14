@@ -11,10 +11,11 @@ var umbcBounds = [
 var map = L.map('map', {
     maxBounds: umbcBounds, // Set the max bounds
     maxBoundsViscosity: 1.0, // Ensures the map bounces back when dragged out of bounds
-    minZoom: 15, // Prevent zooming out too far
+    minZoom: 13, // Allow zooming out further
     maxZoom: 22, // Maximum zoom level
     zoomSnap: 0.5, // Allow half-step zoom levels
-    bounceAtZoomLimits: true // Bounce effect when trying to zoom beyond limits
+    bounceAtZoomLimits: true, // Bounce effect when trying to zoom beyond limits
+    rotate: true // Enable rotation
 }).setView([39.2557, -76.7110], 16.5); // Zoom level adjusted for campus view
 
 var selectedParkStart = "";
@@ -32,6 +33,8 @@ let currentTravelMode = 'pedestrian'; // Default to walking
 let userLocationMarker = null;
 let locationWatchId = null;
 let isTrackingLocation = false;
+let lastHeading = null;
+let mapRotation = 0;
 
 // add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -690,7 +693,7 @@ const routeCtrl = L.Routing.control({
         travelMode: travel,
         unitSystem: google.maps.UnitSystem.IMPERIAL
     }),
- //UI_pawprints
+    //UI_pawprints
     lineOptions: {
         styles: [{
             color: 'transparent',  // Change to a visible color
@@ -704,12 +707,33 @@ const routeCtrl = L.Routing.control({
 
     routeWhileDragging: true,
     position: 'bottomleft',
-    fitSelectedRoutes: true,
+    fitSelectedRoutes: false, // Disable automatic route fitting
     addWaypoints: false,
     collapsible: true,
-  }).addTo(map);
+}).addTo(map);
 
-  routeCtrl.on('routeselected', function(event) {
+// Add a button to recenter the route when needed
+const recenterButton = L.control({ position: 'bottomright' });
+recenterButton.onAdd = function(map) {
+    const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+    div.innerHTML = `
+        <a href="#" title="Recenter route" style="width: 30px; height: 30px; line-height: 30px; display: block; text-align: center; text-decoration: none; color: black; background: white;">
+            <span style="font-size: 20px;">⟲</span>
+        </a>
+    `;
+    div.onclick = function(e) {
+        e.preventDefault();
+        const waypoints = routeCtrl.getWaypoints();
+        if (waypoints.length >= 2) {
+            const bounds = L.latLngBounds(waypoints.map(wp => wp.latLng));
+            map.fitBounds(bounds, { padding: [50, 50] });
+        }
+    };
+    return div;
+};
+recenterButton.addTo(map);
+
+routeCtrl.on('routeselected', function(event) {
     const routeCoordinates = event.route.coordinates;
 
     // Clear previous paw prints
@@ -989,27 +1013,101 @@ document.addEventListener('DOMContentLoaded', function() {
             startInput.value = "Getting your location...";
             useMyLocationBtn.classList.add('loading');
             
-            // Start tracking and add handler for first position
+            // Start tracking
             startLocationTracking();
             
             // Set up a one-time position handler
-            const positionHandler = function(e) {
+            const positionHandler = function(position) {
                 // When we get first position, update input
                 startInput.value = "My Location";
                 useMyLocationBtn.classList.remove('loading');
                 
                 // Store coordinates
-                startInput.dataset.lat = userLocationMarker.getLatLng().lat;
-                startInput.dataset.lng = userLocationMarker.getLatLng().lng;
+                startInput.dataset.lat = position.coords.latitude;
+                startInput.dataset.lng = position.coords.longitude;
                 
                 // Remove this event listener (only needed once)
-                userLocationMarker.off('add', positionHandler);
+                navigator.geolocation.clearWatch(locationWatchId);
+                locationWatchId = navigator.geolocation.watchPosition(
+                    function(pos) {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        const accuracy = pos.coords.accuracy;
+                        
+                        // Update marker position
+                        userLocationMarker.setLatLng([lat, lng]);
+                        
+                        // Update accuracy circle
+                        if (userLocationMarker.accuracyCircle) {
+                            userLocationMarker.accuracyCircle.setLatLng([lat, lng]).setRadius(accuracy);
+                        } else {
+                            userLocationMarker.accuracyCircle = L.circle([lat, lng], {
+                                radius: accuracy,
+                                color: '#4285F4',
+                                fillColor: '#4285F433',
+                                weight: 1
+                            }).addTo(map);
+                        }
+                        
+                        // Update input field
+                        startInput.dataset.lat = lat;
+                        startInput.dataset.lng = lng;
+                        
+                        // Update route if needed
+                        updateRouteIfUsingMyLocation();
+                    },
+                    function(error) {
+                        console.error('Error getting location:', error);
+                        stopLocationTracking();
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                alert("Location tracking was denied. Please enable location services.");
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                alert("Location information is unavailable.");
+                                break;
+                            case error.TIMEOUT:
+                                alert("The request to get your location timed out.");
+                                break;
+                            default:
+                                alert("An unknown error occurred while tracking your location.");
+                                break;
+                        }
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
             };
             
-            // Listen for the marker being added to the map
-            if (userLocationMarker) {
-                userLocationMarker.on('add', positionHandler);
-            }
+            // Get initial position
+            navigator.geolocation.getCurrentPosition(positionHandler, function(error) {
+                console.error('Error getting initial position:', error);
+                startInput.value = "Location unavailable";
+                useMyLocationBtn.classList.remove('loading');
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        alert("Location access was denied. Please enable location services.");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert("Location information is unavailable.");
+                        break;
+                    case error.TIMEOUT:
+                        alert("The request to get your location timed out.");
+                        break;
+                    default:
+                        alert("An unknown error occurred while getting your location.");
+                        break;
+                }
+            }, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
         }
     });
 
@@ -1526,7 +1624,7 @@ function setupRouteObserver() {
 // Call this in your document ready or initialization code
 initializeRouting();
 
-// Add this function to handle location tracking
+// Function to start location tracking
 function startLocationTracking() {
     // Don't start tracking if already tracking
     if (isTrackingLocation) return;
@@ -1537,38 +1635,33 @@ function startLocationTracking() {
         return;
     }
     
-    // Create a user location marker with a blue dot
-    if (!userLocationMarker) {
-        const userIcon = L.divIcon({
-            className: 'user-location-marker',
-            iconSize: [24, 24],
-            iconAnchor: [12, 12]
-        });
-        userLocationMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);
-        userLocationMarker.bindPopup("You are here").openPopup();
-    }
-    
-    // Start watching position
+    // Start watching position with heading
     locationWatchId = navigator.geolocation.watchPosition(
         // Success callback
         function(position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const accuracy = position.coords.accuracy;
+            const heading = position.coords.heading; // Get heading in degrees
             
-            // Update marker position
-            userLocationMarker.setLatLng([lat, lng]);
-            
-            // Add an accuracy circle
-            if (userLocationMarker.accuracyCircle) {
+            // Update or create accuracy circle
+            if (userLocationMarker && userLocationMarker.accuracyCircle) {
                 userLocationMarker.accuracyCircle.setLatLng([lat, lng]).setRadius(accuracy);
             } else {
-                userLocationMarker.accuracyCircle = L.circle([lat, lng], {
-                    radius: accuracy,
-                    color: '#4285F4',
-                    fillColor: '#4285F433',
-                    weight: 1
-                }).addTo(map);
+                userLocationMarker = {
+                    accuracyCircle: L.circle([lat, lng], {
+                        radius: accuracy,
+                        color: '#4285F4',
+                        fillColor: '#4285F433',
+                        weight: 1
+                    }).addTo(map)
+                };
+            }
+            
+            // Handle map rotation based on heading
+            if (heading !== null && heading !== undefined) {
+                // Rotate the map to match the heading
+                map.setBearing(-heading); // Negative because we want to rotate the map, not the marker
             }
             
             // Update input field if it's set to "My Location"
@@ -1618,13 +1711,12 @@ function stopLocationTracking() {
         navigator.geolocation.clearWatch(locationWatchId);
         locationWatchId = null;
         
-        // Remove marker and accuracy circle
-        if (userLocationMarker) {
-            if (userLocationMarker.accuracyCircle) {
-                map.removeLayer(userLocationMarker.accuracyCircle);
-                userLocationMarker.accuracyCircle = null;
-            }
-            map.removeLayer(userLocationMarker);
+        // Reset map rotation
+        map.setBearing(0);
+        
+        // Remove accuracy circle
+        if (userLocationMarker && userLocationMarker.accuracyCircle) {
+            map.removeLayer(userLocationMarker.accuracyCircle);
             userLocationMarker = null;
         }
         
