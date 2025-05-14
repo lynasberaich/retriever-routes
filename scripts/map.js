@@ -1870,3 +1870,60 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+const offices = {
+  "Undergraduate Admissions": { coordinates: [39.25656984362162, -76.71224464059233] },
+  "Academic Services": { coordinates: [39.254959406515184, -76.71348000109863] },
+  "Financial Aid and Scholarships": { coordinates: [39.25661827724731, -76.71236974039044] },
+  "Career Center": { coordinates: [39.25408757550593, -76.712463565239] },
+  "Counseling Center": { coordinates: [39.2548, -76.7105] },
+  "Parking Services": { coordinates: [39.2529, -76.7088] },
+  "Division of Professional Studies": { coordinates: [39.2553, -76.7099] },
+  "Alumni Relations": { coordinates: [39.2561, -76.7132] },
+  "Bookstore": { coordinates: [39.2547, -76.7097] },
+  "Library & Gallery (AOK Library)": { coordinates: [39.2544, -76.7098] },
+  "Athletics & Physical Recreation": { coordinates: [39.2532, -76.7102] },
+  "University Center (Student Services)": { coordinates: [39.2545, -76.7109] },
+  "Student Business Services": { coordinates: [39.2546, -76.7110] },
+  "Office of the President": { coordinates: [39.2546, -76.7110] },
+  "Office of Government Relations and Community Affairs": { coordinates: [39.2546, -76.7110] },
+  "Division of Institutional Equity": { coordinates: [39.2546, -76.7110] },
+  "Office of Equity and Civil Rights": { coordinates: [39.2546, -76.7110] },
+  "The Center for Social Justice and Dialogue": { coordinates: [39.2546, -76.7110] },
+  "The Women's Center": { coordinates: [39.25478383030869, -76.71083726786364] },
+  "Office of Accessibility and Disability Services": { coordinates: [39.25478383030869, -76.71083726786364] },
+  "Office of Research Development": { coordinates: [39.2542, -76.7093] },
+  "Office of Sponsored Programs": { coordinates: [39.2542, -76.7093] },
+  "Office of Research Administrative Services": { coordinates: [39.2542, -76.7093] },
+  "Office of Center Administration & Management": { coordinates: [39.2542, -76.7093] },
+  "Office of Earth & Space Research Administration": { coordinates: [39.2542, -76.7093] },
+  "Office of Research Protections & Compliance": { coordinates: [39.2542, -76.7093] },
+  "Office of Technology Development": { coordinates: [39.2542, -76.7093] }
+};
+
+const officeListDropdown = document.getElementById('office-list');
+
+// Sort office names alphabetically
+const sortedOfficeNames = Object.keys(offices).sort();
+
+// Create clickable elements for each office
+sortedOfficeNames.forEach(officeName => {
+    const officeElement = document.createElement('p');
+    officeElement.className = 'clickable-building';
+    officeElement.textContent = officeName;
+
+    officeElement.addEventListener('click', function () {
+        map.setView(offices[officeName].coordinates, 19);
+
+        const popup = L.popup()
+            .setLatLng(offices[officeName].coordinates)
+            .setContent(`<div class="building-popup"><h3>${officeName}</h3></div>`)
+            .openOn(map);
+
+        // Close dropdown after selection
+        const dropdown = officeListDropdown.closest('.dropdown');
+        if (dropdown) dropdown.classList.remove('active');
+    });
+
+    officeListDropdown.appendChild(officeElement);
+});

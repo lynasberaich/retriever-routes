@@ -1809,6 +1809,7 @@ export const shorthandInputs = {
     }
 };
 
+
 export const nameToId = {
     //parking
     "Lot 1": "PL01",
